@@ -257,8 +257,9 @@ Happy coding!
 This is the main function and the only exported object. It does basically one thing but it has different overloads to do that:
 
   * `redefine(obj:Object, key:string, value:any[, defaults:Object]):Object`, returns the first argument and define a value straight forward using ES5 defaults unless specified differently.
-  * `redefine(obj:Object, key:string, value:As[, defaults:Object]):Object`, returns the first argument and define a property `key` using `redefine.as({descriptor})` as value descriptor. `As` is an internal, private, class that overrides any default, if specified, or inherited behavior.
-  * `redefine(obj:Object, key:string, value:Later[, defaults:Object]):Object`, returns the first argument and define a property `key` as lazily accessed and replaced as direct property that could be deleted at any time in order to reuse the inherited getter. `Later` is an internal, private, class that overrides any default, if specified, or inherited behavior.
+    This signature has these two kind of overloads
+      * `redefine(obj:Object, key:string, value:As[, defaults:Object]):Object`, returns the first argument and define a property `key` using `redefine.as({descriptor})` as value descriptor. `As` is an internal, private, class that overrides any default, if specified, or inherited behavior.
+      * `redefine(obj:Object, key:string, value:Later[, defaults:Object]):Object`, returns the first argument and define a property `key` as lazily accessed and replaced as direct property that could be deleted at any time in order to reuse the inherited getter. `Later` is an internal, private, class that overrides any default, if specified, or inherited behavior.
   * `redefine(obj:Object, properties:Object[, defaults:Object])`, returns the first argument, it does exactly what other overloads do in this case looping through own properties in the specified `properties` Object.
 
 ### redefine.from()
