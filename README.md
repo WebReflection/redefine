@@ -119,7 +119,7 @@ We focus on the definition of our meant behavior, rather than on each descriptor
     );
 
 ### A Simplified Object.create
-We all have to consider that current descriptors verbosity and concept is ["*trolling*" major ECMAScript experts in the world](https://mail.mozilla.org/pipermail/es-discuss/2012-November/026716.html) too. `Object.create` is not natural for JS developers and it makes things more complex rather than ever. Same descriptors verbosity applied for what should be the `new function` substitute ... in this sense it was a failure! How about redefining objects from others?
+We all have to consider that current descriptors verbosity and concept is ["*trolling*" major ECMAScript experts in the world](https://mail.mozilla.org/pipermail/es-discuss/2012-November/026716.html) too. `Object.create` is not natural for JS developers and it makes things more complex than ever. Same descriptors verbosity applied for what should be the `new function` substitute ... in this sense it was a failure! How about redefining objects from others?
 
     // ES5 Object.create
     var instance = Object.create(
@@ -156,9 +156,10 @@ We all have to consider that current descriptors verbosity and concept is ["*tro
       }
     );
 
-Not only the latter example is shorter and cleaner, but also ... really, every time we define a method that `this` used inside another context as the descriptor is, looks so confusing and indeed confusing could be because the descriptor is just an object and it could be used differently in other pieces of logic.
+I hope you agree that every time we define a method where `this` is used inside another context, as the descriptor is, looks so confusing!
+The descriptor is just an object and it could be used differently in other pieces of logic so that if invoked a part everything will fail there.
 
-In few words, `redefine.js` is also **less ambiguous** than ES5!
+In few words, `redefine.js` can also be **less ambiguous** than ES5!
 
 ### Lazy Property Definition Pattern Included
 I have described this pattern in [The Power Of Getters](http://webreflection.blogspot.com/2013/01/the-power-of-getters.html) entry in my blog.
@@ -171,7 +172,7 @@ or even worst ...
 
 > **jonz** ... Right now this *syntax seems like obfuscation but the patterns it supports are what I've always wanted*, I wonder if it will ever become familiar.
 
-So you are right guys, the way ES5 lets us implemented amazing new patterns and possibilities is even hard to understand or imagine. This is why `redefine.js` comes with a pattern many other programming languages can only dream about: the efficient and performance oriented lazy inherited getter replaced with a direct property access!
+So you are right guys, the way ES5 lets us implement amazing new patterns and possibilities is even hard to understand or imagine. This is why `redefine.js` comes with a pattern many other programming languages can only dream about: the efficient and performance oriented lazy inherited getter replaced with a direct property access!
 
     // what you would do today in ES3 classes
     function MyClass() {
@@ -182,7 +183,7 @@ So you are right guys, the way ES5 lets us implemented amazing new patterns and 
         this.method.bind(this);
     }
 
-Above snippet creates 4 extra objects per each instance of `MyClass`. This is a [memory disaster prone approach plus is really slow during instance creation](http://jsperf.com/the-power-of-getters-element) you can easily compare checking the *Element_Getter* results across all browsers and engines. We also force our syntax to be ES3 because if the prototype of MyClass would have been define via `Object.defineProperties()` and these were not `configurable` or `writable`, this is what we should really do in order to have an equivalent behavior in our code.
+Above snippet creates 4 extra objects per each instance of `MyClass`. This is a [memory disaster prone approach plus is really slow during instance creation](http://jsperf.com/the-power-of-getters-element) you can easily compare checking the *Element_Getter* results across all browsers and engines. We also force our syntax to be ES3 because if the prototype of MyClass would have been defined via `Object.defineProperties()` and these were not `configurable` or `writable`, this is what we should really do in order to have an equivalent behavior in our code.
 
     // what we should do if MyClass.prototype
     // was defined with these properties as defaults
@@ -355,7 +356,19 @@ To alunch tests in any browser simply do `open test.html` in OSX or just double 
 then check [your localhost/test.html](http://127.0.0.1:1337/test.html) page and it should be green.
 
 
+### Shut Up And Give Me Code !
+You can find the [source code here](https://github.com/WebReflection/redefine/blob/master/src/redefine.js) and the [minified version here](https://github.com/WebReflection/redefine/blob/master/build/redefine.js).
 
+As you can see, once minzipped the library is **about 0.6 KB** and for an easier life enriched with new patterns I think is hard to expect a lighter utility.
+
+### De Facto Targets
+These are those situations where you might want to use `redefine.js`
+
+  * `node.js` development, or generally speaking any ES5 capable server side environment. The fact `redefine.js` is more robust should be an extra reason to adopt it.
+  * Smartphones, since nowadays, all of them support ES5
+  * modern desktop browsers and modern libraries
+
+Enjoy!
 
 
 
