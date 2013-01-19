@@ -339,8 +339,9 @@ It is possible to enhance redefine targets using some partial polyfill of ES5 `O
   * Safari, and mobile
   * Webkit stock browsers for mobile
   * node.js
+  * Rhino
 
-Other server side engines such **Rhino** or **Ringo** should be supported too since these are compatible with ES5 and ES5.1. The best way to know if your device, browser, or server side JS engine is working is to [grab wru](https://github.com/WebReflection/wru) and run those tests :-)
+Other server side engines such **Ringo** should be supported too since these are compatible with ES5 and ES5.1. The best way to know if your device, browser, or server side JS engine is working is to [grab wru](https://github.com/WebReflection/wru) and run those tests :-)
 
 
 ### 100% Code Coverage
