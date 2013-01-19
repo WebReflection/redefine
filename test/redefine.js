@@ -109,4 +109,66 @@ wru.test([{
     delete nlo.handlers;
     wru.assert("by default, lazy assigned properties are removed", "handlers" in nlo && !nlo.hasOwnProperty("handlers"));
   }
+},{
+  name: "the Camera use case",
+  test: function (reality) {
+    function Camera() {
+      // by default
+      this._power = false;
+      // or if we don't want to expose it
+      // via for/in loops
+      // redefine(this, "_power", "off", {writable:true});
+    }
+
+    redefine(
+      Camera.prototype, {
+
+      // until we take a picture
+      // we don't even need one
+      storage: later(function(){
+        // but once we do ...
+        // a fresh new object per instance!
+        return {};
+        // this operation could be much more expensive
+        // in therms of both initialization
+        // and memory assignment
+      }),
+
+      // to take a picture we need an action
+      // in this case represented by this method
+      shot: function () {
+        // we need a storage now!
+        this.storage[
+          Date.now()
+        ] = JSON.stringify(reality);
+        // done!
+      },
+
+      // a property that should always be "on" or "off"
+      // and nothing else is acceptable as value
+      power: as({
+        // normalized through the getter
+        get: function() {
+          return this._power ? "on" : "off";
+        },
+        // and parsed properly through the setter
+        set: function(onoff) {
+          // if onoff is "off" or falsy we switch the camera off
+          this._power = onoff === "off" ? false : !!onoff;
+          // just imagine we can react here before
+          // switching off concretely
+        }
+      })
+    }, {
+      enumerable: true
+    });
+
+    // the instance
+    var olympic = new Camera;
+    wru.assert("power is off", olympic.power === "off");
+    olympic.power = "on";
+    wru.assert("now is on", olympic.power);
+    olympic.shot();
+    wru.assert("and quite a quick shot!", !!olympic.storage[Date.now()]);
+  }
 }]);
