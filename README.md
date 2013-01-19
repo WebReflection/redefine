@@ -60,28 +60,28 @@ The best part about `redefine.js` is its **ambiguity freee** approach, granted b
       })
     });
 
-The powerful simplified API lets us define **defaults** too, si imagine we want that all properties should be `configurable`, `enumerable`, and `writable` because we expect exactly same *ES3* behavior. This is what you would be forced to do in ES5:
+The powerful simplified API lets us define **defaults** too, so imagine we want that all properties should be `configurable`, `enumerable`, and `writable` because we expect exactly same *ES3* behavior. This is what you would be forced to do in ES5:
 
-  // ES5 has no defaults
-  Object.defineProperties(
-    SomeClass.protottype,
-    {
-      method: {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: function () {
-          // the method
+    // ES5 has no defaults
+    Object.defineProperties(
+      SomeClass.protottype,
+      {
+        method: {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: function () {
+            // the method
+          }
+        },
+        property: {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: "the property"
         }
-      },
-      property: {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: "the property"
       }
-    }
-  );
+    );
 
 It's kinda hard to tell anymore what is that code about, don't you agree? Now let's compare against `redefine()`
 
