@@ -172,7 +172,7 @@ or even worst ...
 
 > **jonz** ... Right now this *syntax seems like obfuscation but the patterns it supports are what I've always wanted*, I wonder if it will ever become familiar.
 
-So you are right guys, the way ES5 lets us implement amazing new patterns and possibilities is even hard to understand or imagine. This is why `redefine.js` comes with a pattern many other programming languages can only dream about: the memory efficient and performance oriented **inherited getter replaced on demand with a direct property access**! (*BOOM*, I know your mind just blown!)
+So you are right guys, the way ES5 lets us implement amazing new patterns and possibilities is even hard to understand or imagine. This is why `redefine.js` comes with a pattern many other programming languages can only dream about: the memory efficient and performance oriented **inherited getter replaced on demand with a direct property access**! (BOOM, I know your mind just blown!)
 
     // what you would do today in ES3 classes
     function MyClass() {
