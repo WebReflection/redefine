@@ -86,17 +86,6 @@ var _ = this._ = function(_, Function, Object) {
     }
   }
 
-  // returns boolean values for boolean descriptor properties
-  function getDescriptorProperty(descriptor, key) {
-    return hasOwnProperty.call(descriptor, key) && descriptor[key];
-    /* with defaults is probably **not** a good idea
-    // this code stays in case it comes out it was best idea ever ...
-    return !!(hasOwnProperty.call(descriptor, key) ?
-      descriptor[key] : redefine.defaults[key]
-    );
-    */
-  }
-
   function lazy(key, descriptor) {
     // trap these properties at definition time
     // and don't bother ever again!
@@ -108,8 +97,10 @@ var _ = this._ = function(_, Function, Object) {
       configurable = hasOwnProperty.call(descriptor, CONFIGURABLE) ?
         !!descriptor[CONFIGURABLE] : true
       ,
-      enumerable = getDescriptorProperty(descriptor, ENUMERABLE),
-      writable = getDescriptorProperty(descriptor, WRITABLE),
+      // defaults here might be dangerous
+      // but might be useful too ... TODO: think about it
+      enumerable = hasOwnProperty.call(descriptor, ENUMERABLE) && descriptor[ENUMERABLE],
+      writable = hasOwnProperty.call(descriptor, WRITABLE) && descriptor[WRITABLE],
       self
     ;
     // a function per prototype definition could be
