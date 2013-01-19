@@ -40,6 +40,54 @@ wru.test([{
     wru.assert("property again set correctly", String(b) === sentence);
   }
 },{
+  name: "nasty environment",
+  setup: function () {
+    Object.prototype.get = function screwed(){
+      // deal with it
+    };
+    Object.prototype.configurable =
+    Object.prototype.enumerable =
+    Object.prototype.writable = true;
+  },
+  test: function () {
+    var failed = false;
+    try {
+      var o = Object.defineProperty({}, "key", {value: "value"});
+    } catch(o_O) {
+      failed = true;
+    }
+    wru.assert("ES5 failed", failed);
+    var o = redefine({}, "key", "value");
+    wru.assert("not enumerable", !o.propertyIsEnumerable("key"));
+    delete o.key;
+    wru.assert("not configurable", "key" in o);
+    o.key = 123;
+    wru.assert("not writable", o.key === "value");
+    // defaults
+    o = redefine({}, "key", "value", {enumerable: true});
+    wru.assert("enumerable", o.propertyIsEnumerable("key"));
+    delete o.key;
+    wru.assert("not configurable", "key" in o);
+    o.key = 123;
+    wru.assert("not writable", o.key === "value");
+    o = redefine({}, "key", "value", {configurable: true, enumerable: true});
+    wru.assert("enumerable", o.propertyIsEnumerable("key"));
+    delete o.key;
+    wru.assert("configurable", !("key" in o));
+    o = redefine({}, "key", "value", {writable: true, enumerable: true, enumerable: true});
+    o.key = 123;
+    wru.assert("not writable", o.key === 123);
+    wru.assert("enumerable", o.propertyIsEnumerable("key"));
+    delete o.key;
+    wru.assert("not configurable", "key" in o);
+  },
+  teardown: function () {
+    delete Object.prototype.get;
+    delete Object.prototype.configurable;
+    delete Object.prototype.enumerable;
+    delete Object.prototype.writable;
+  }
+},{
   name: "define plus defaults",
   test: function () {
     var o = redefine({},"k",1);
@@ -87,10 +135,12 @@ wru.test([{
   name: "lazy/later property assignment",
   test: function () {
     function LaterOn() {}
+    var wasRightContext = 123;
     var shared = {};
     var assigned = false;
     redefine(LaterOn.prototype, {
       handlers: later(function () {
+        wasRightContext = this;
         assigned = true;
         return {};
       }),
@@ -103,6 +153,7 @@ wru.test([{
     wru.assert("handlers still never assigned", !assigned);
     wru.assert("handlers is set once", nlo.handlers === nlo.handlers);
     wru.assert("and assigned is true indeed", assigned);
+    wru.assert("it was the right context", wasRightContext === nlo);
     wru.assert("handlers is unique per each instance", (new LaterOn).handlers !== nlo.handlers);
     wru.assert("but this is not true for shared", (new LaterOn).shared === (new LaterOn).shared);
     wru.assert("lazy assigned properties are owned", nlo.hasOwnProperty("handlers"));
@@ -111,7 +162,7 @@ wru.test([{
   }
 },{
   name: "the Camera use case",
-  test: function (reality) {
+  test: function (reality) {var now;
     function Camera() {
       // by default
       this._power = false;
@@ -139,7 +190,7 @@ wru.test([{
       shot: function () {
         // we need a storage now!
         this.storage[
-          Date.now()
+          now = Date.now()
         ] = JSON.stringify(reality);
         // done!
       },
@@ -169,6 +220,64 @@ wru.test([{
     olympic.power = "on";
     wru.assert("now is on", olympic.power);
     olympic.shot();
-    wru.assert("and quite a quick shot!", !!olympic.storage[Date.now()]);
+    wru.assert("and quite a quick shot!", !!olympic.storage[now]);
+  }
+},{
+  name: "examples",
+  test: function () {var assert = wru.assert;
+
+// inline class example
+var MyClass = redefine(
+  // the constructor
+  function MyClass() {
+    // awesome stuff here!
+  }
+    // the original prototype
+    .prototype,
+  // the list of properties and methods
+  {
+    toString: function () {
+      return "Hello There";
+    }
+  }
+).constructor; // MyClass again
+
+assert(String(new MyClass) === "Hello There");
+
+
+// object from object
+var source = {
+  name: "source",
+  method: function () {
+    return this.name;
+  }
+};
+
+// basic inheritance
+var son = redefine.from(source);
+assert(son.method() === "source");
+assert(source.isPrototypeOf(son));
+
+// overwrite inline
+son = redefine.from(source, {name: "son"});
+assert(son.method() === "son");
+
+// object from constructor
+function Source(){}
+Source.prototype.name = "source";
+Source.prototype.method = function () {
+  return this.name;
+};
+
+son = redefine.from(Source);
+assert(son.method() === "source");
+assert(son instanceof Source);
+
+son = redefine.from(Source, {name: "son"});
+assert(son.method() === "son");
+assert(son instanceof Source);
+
+
+
   }
 }]);
