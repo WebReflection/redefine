@@ -1,4 +1,48 @@
 //remove:
+// Rhino ... doesn't work anyhow unless you have wru repo too
+var require = require || function (global, cache, base) {
+  return function require(path) {
+    if (cache[path]) return cache[path];
+    var
+      filename = new java.io.File(
+        base + java.io.File.separator + path
+      ).getCanonicalPath(),
+      exports = cache[path] = {},
+      module = {
+        id: path,
+        parent: global,
+        filename: filename,
+        exports: exports
+      }
+    ;
+    Function(
+      "global", "module", "exports",
+      readFile(filename)
+    ).call(exports,
+      global, module, exports
+    );
+    ({}.hasOwnProperty).call(
+      exports = module.exports,
+      "loaded"
+    ) || (exports.loaded = true);
+    return cache[path] = exports;
+  };
+}(this, {}, new java.io.File(
+  environment["sun.java.command"].split(/ +/).pop().replace(
+    new RegExp(java.io.File.separator + "[^" + java.io.File.separator + "]*$"), "")
+  ).getCanonicalPath()
+);
+
+// still Rhino ...
+if (typeof load == "function") {
+  load(
+    ["..", "wru", "build", "wru.console.js"].join(
+      java.io.File.separator
+    )
+  );
+}
+
+// Rhino and node.js
 var
   redefine = require('../src/redefine.js').redefine
 ;
