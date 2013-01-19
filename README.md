@@ -267,6 +267,8 @@ This semantic method is similar to ES5 `Object.create` except descriptors are th
   * `redefine.from(source:object[, properties:Object[, defaults:Object]]):Object` returns a new instance where `source.isPrototypeOf(returnedObject)`. Please note `null` is possible too and the second argument, optional as optional is the third one, can be used to redefine properties.
   * `redefine.from(Class:Function[, properties:Object[, defaults:Object]]):Object` returns an `instanceof Class`, using `Class.prototype` as extend.
 
+Here an example:
+
     var son = redefine.from(
       ClassName, {age: 123}
     );
