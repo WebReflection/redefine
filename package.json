@@ -1,0 +1,34 @@
+{
+  "name": "redefine",
+  "version": "0.1.0",
+  "description": "A lightweight utility for an easier ES5 aware object properties definition introducing new, performance oriented, patterns.",
+  "homepage": "https://github.com/WebReflection/redefine",
+  "keywords": [
+    "ES5",
+    "defineProperty",
+    "defineProperties",
+    "Object",
+    "create",
+    "inheritance",
+    "OOP"
+  ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://mths.be/mit"
+    }
+  ],
+  "author": "Andrea Giammarchi <andrea.giammarchi@gmail.com> (http://webreflection.blogspot.com/)",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/WebReflection/redefine.git"
+  },
+  "main": "./src/redefine.js",
+  "engines": [
+    "node",
+    "rhino"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {}
+}

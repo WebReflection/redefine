@@ -1,4 +1,4 @@
 redefine
 ========
 
-lightweight utility for smart object properties definition
+A lightweight utility for an easier ES5 aware object properties definition introducing new, performance oriented, patterns.
