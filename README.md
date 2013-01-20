@@ -315,6 +315,19 @@ This semantic method returns an `instanceof Later` object which aim is to be rec
     // but only, and once, when/if needed
     me.handlers.test = listener;
 
+It is possible to use a descriptor in order to overwrite the default configuration for this use case which is `{configurable:true, writable:false, enumerable:false}`. In this case, the `value` should be the callback able to return the lazily defined property.
+
+    var setAsObjectLaterOn = redefine.later({
+      writable: true,     //we want be able to change it later on
+      enumerable: true,   // shows up in for/in loops
+      configurable: false,// once define there's no way to delete it
+      value: function (){
+        return {};
+      }
+    });
+
+I see what you are thinking about: "*What? How can those properties have value and writable if we are defining a getter?*" Did I mention this method is called `later()` because is later that the property is define through the inherited getter ? :-)
+
 ### Libraries Compatibility
 The `redefine.js` API is compatible with [Underscore](http://underscorejs.org) and [Lo-Dash](http://lodash.com) too as `_.redefine` utility. Bear in mind, **you don't need these libraries** at all, in fact `redefine.js` is completely dependencies free but in order to avoid global scope pollution the `redefine` function is defined into a global `_` object. If this is not present it is created, while if it's already there, is simply enriched.
 

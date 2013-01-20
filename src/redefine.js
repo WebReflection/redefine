@@ -47,6 +47,7 @@ var _ = this._ = function(_, Function, Object) {
 
   function defineMagic(object, key, defaults, descriptor) {
     assign(defaults || redefine.defaults || {}, nullObject);
+    assign(descriptor, nullObject);
     if (
       hasOwnProperty.call(descriptor, GET) ||
       hasOwnProperty.call(descriptor, SET)
@@ -54,7 +55,6 @@ var _ = this._ = function(_, Function, Object) {
       delete nullObject[WRITABLE];
       delete nullObject[VALUE];
     }
-    assign(descriptor, nullObject);
     defineProperty(object, key, nullObject);
     clear(nullObject);
   }
@@ -90,22 +90,13 @@ var _ = this._ = function(_, Function, Object) {
     // trap these properties at definition time
     // and don't bother ever again!
     var
-      callback = descriptor.valueOf,
-      // by default, configurable is true so it can be deleted
-      // however, it is possible to make it not deletable once set
-      // explicitly setting it as falsy
+      callback = descriptor._,
       configurable = hasOwnProperty.call(descriptor, CONFIGURABLE) ?
-        !!descriptor[CONFIGURABLE] : true
-      ,
-      // defaults here might be dangerous
-      // but might be useful too ... TODO: think about it
+        !!descriptor[CONFIGURABLE] : true,
       enumerable = hasOwnProperty.call(descriptor, ENUMERABLE) && descriptor[ENUMERABLE],
       writable = hasOwnProperty.call(descriptor, WRITABLE) && descriptor[WRITABLE],
       self
     ;
-    // a function per prototype definition could be
-    // more expensive during prototype definition
-    // but full of wins per each instance of that function
     descriptor[GET] = function get() {
       nullObject[VALUE] = callback.call(self = this);
       nullObject[CONFIGURABLE] = configurable;
@@ -145,7 +136,10 @@ var _ = this._ = function(_, Function, Object) {
   // internal/private class
   // checked for lazy property assignment
   function Later(callback) {
-    this.valueOf = callback;
+    this._ = typeof callback == "function" ?
+      callback :
+      assign(callback, this) || callback[VALUE]
+    ;
   }
 
   // public Later factory

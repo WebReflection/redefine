@@ -1,4 +1,14 @@
 //remove:
+
+// to test this via node, from redefine folder
+// npm install wru
+// wru test/redefine.js
+
+// -------------------------------------------------------
+// sorry, this works locally and for Rhino only
+// cd ~/code/redefine
+// java -jar ~/code/wru/builder/jar/js.jar ~/code/redefine/test/redefine.js
+
 // Rhino ... doesn't work anyhow unless you have wru repo too
 var require = require || function (global, cache, base) {
   return function require(path) {
@@ -55,6 +65,7 @@ var
   later = redefine.later
 ;
 
+// the shared test
 wru.test([{
   name: "inheritance",
   test: function () {
@@ -203,6 +214,35 @@ wru.test([{
     wru.assert("lazy assigned properties are owned", nlo.hasOwnProperty("handlers"));
     delete nlo.handlers;
     wru.assert("by default, lazy assigned properties are removed", "handlers" in nlo && !nlo.hasOwnProperty("handlers"));
+  }
+},{
+  name: "lazy patter configurability",
+  test: function () {
+    var
+      oTest,
+      oOther,
+      source = redefine({}, {
+        test: later(function () {
+          return oTest = {};
+        }),
+        other: later({
+          writable: true,     //we want be able to change it later on
+          enumerable: true,   // shows in a forin
+          configurable: false,// once defined cannot be deleted
+          value: function () {
+            return oOther = {};
+          }
+        })
+      }),
+      o = redefine.from(source)
+    ;
+    wru.assert("re defined", o.test && o.other);
+    wru.assert("method test called and variable assigned", oTest === o.test && !!oTest);
+    wru.assert("method other called and variable assigned", oOther === o.other && !!oOther);
+    oTest = Object.getOwnPropertyDescriptor(o, "test");
+    wru.assert("o.test has expected descriptor", !oTest.writable && !oTest.enumerable && oTest.configurable);
+    oOther = Object.getOwnPropertyDescriptor(o, "other");
+    wru.assert("o.other has expected descriptor", oOther.writable && oOther.enumerable && !oOther.configurable);
   }
 },{
   name: "the Camera use case",
