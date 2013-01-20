@@ -2,9 +2,9 @@
 
 # default build task
 build:
+	make test
 	mkdir -p build
 	java -jar jar/yuicompressor-2.4.6.jar --type=js src/redefine.js -o build/redefine.js
-	make test
 
 # clean/remove build folder
 clean:
