@@ -97,7 +97,7 @@ redefine VS ES5
     });
 
 #### Real World Example: An Emitter Class
-This a simplified `Emitter` class with completely memory safe logic.
+This a simplified `Emitter` class with a logic optimized to save some memory and GC cycle.
 
     // generic basic Emitter constructor
     function Emitter(){}
