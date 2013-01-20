@@ -336,7 +336,8 @@ In *node.js* you can use require
     npm install redefine
     
     var
-      redefine = require('redefine').redefine,
+      redefine = require('redefine'),
+      // redefine = require('redefine').redefine, works too
       as = redefine.as,
       from = redefine.from,
       later = redefine.later

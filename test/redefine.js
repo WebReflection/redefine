@@ -54,7 +54,7 @@ if (typeof load == "function") {
 
 // Rhino and node.js
 var
-  redefine = require('../src/redefine.js').redefine
+  redefine = require('../src/redefine.js')//.redefine
 ;
 //:remove
 
