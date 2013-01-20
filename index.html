@@ -1,0 +1,494 @@
+<!doctype html>
+<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
+<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on http://github.com/jonrohan -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen"/>
+  <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/script.js"></script>
+
+  <title>redefine.js</title>
+  <meta name="description" content="lightweight utility for smart object properties definition">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">redefine.js</h1>
+    </header>
+    <div id="container">
+      <p class="tagline">lightweight utility for smart object properties definition</p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <a href="https://github.com/WebReflection/redefine/tarball/master" class="download-button tar"><span>Download</span></a>
+          <a href="https://github.com/WebReflection/redefine/zipball/master" class="download-button zip"><span>Download</span></a>
+          <a href="https://github.com/WebReflection/redefine" class="code">View redefine.js on GitHub</a>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+          <h1>redefine.js</h1>
+
+<p>a lightweight, simplified, and powerful ES5 utility.</p>
+
+<h3>The Problem</h3>
+
+<p>ES5 verbosity is not just annoying, is also <em>spaghetti prone</em>. The inability to group few descriptors together for one or more properties is inefficient too because of the amount of garbage we create at runtime to define all properties we need.</p>
+
+<pre><code>// classic ES5 syntax
+Object.defineProperties(
+  SomeClass.protottype,
+  {
+    method: {
+      value: function () {
+        // the method
+      }
+    },
+    property: {
+      enumerable: true,
+      value: "the property"
+    }
+  }
+);
+</code></pre>
+
+<p>To define one method and one property we have used 3 extra objects: the properties wrapper, and each property descriptor. In case we were planning to make a list of properties all enumerable, as well as we could decide for writable or configurable, we would have repeated that pattern all over, resulting in a giant piece of JavaScript that will look like <code>enumerable:true</code> and nothing else. We also have some difficulty to understand what is each property about because the way we are familiar with is this one:</p>
+
+<pre><code>// the familiar JS approach
+SomeClass.prototype = {
+  method: function () {
+    // the method
+  },
+  property: "the property"
+};
+</code></pre>
+
+<p>Above snippet is not just more elegant and clean, is also better at runtime and much easier to read. In ES5, as example, when we see a function is not necessarily because that is a method, it might be a getter or setter too so we have to pay a lot of attention when we look at the code.</p>
+
+<h3>The Solution</h3>
+
+<p>So why cannot we have the best from both worlds? An easy to read and naturally understand syntax with the ability to switch ES5 power <em>on or off on demand</em>?</p>
+
+<pre><code>// redefine.js
+redefine(
+  SomeClass.prototype, {
+  method: function () {
+    // the method
+  },
+  property: "the property"
+});
+</code></pre>
+
+<p>The best part about <code>redefine.js</code> is its <strong>ambiguity freee</strong> approach, granted by hidden classes understood at definition time, a technique that lets us switch <code>power on</code> when and if needed. As example, the very first <code>Object.definepropeties</code> snippet is not just setting properties, is also defining one of them as <code>enumerable</code>.</p>
+
+<pre><code>// identical to initial snippet
+redefine(
+  SomeClass.prototype, {
+  method: function () {
+    // the method
+  },
+  property: redefine.as({
+    enumerable: true,
+    value: "the property"
+  })
+});
+</code></pre>
+
+<p>The powerful simplified API lets us define <strong>defaults</strong> too, so imagine we want that all properties should be <code>configurable</code>, <code>enumerable</code>, and <code>writable</code> because we expect exactly same <em>ES3</em> behavior. This is what you would be forced to do in ES5:</p>
+
+<pre><code>// ES5 has no defaults
+Object.defineProperties(
+  SomeClass.protottype,
+  {
+    method: {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: function () {
+        // the method
+      }
+    },
+    property: {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: "the property"
+    }
+  }
+);
+</code></pre>
+
+<p>It's kinda hard to tell anymore what is that code about, don't you agree? Now let's compare against <code>redefine()</code></p>
+
+<pre><code>// redefine.js
+redefine(
+  SomeClass.prototype,
+  {
+    method: function () {
+      // the method
+    },
+    property: "the property"
+  },
+
+  // optional 3rd argument for defaults
+  {
+    configurable: true,
+    enumerable: true,
+    writable: true
+  }
+);
+</code></pre>
+
+<p>We focus on the definition of our meant behavior, rather than on each descriptor property. If we apply defaults in groups, the code will be much more organized too. Bear in mind that defaults can be overwritten by semantic <code>redefine.as()</code> definition.</p>
+
+<pre><code>redefine(
+  object,
+  {
+    prop: as({
+      enumerable: false,
+      value: theValue
+    })
+  },
+  {
+    enumerable: true
+  }
+);
+</code></pre>
+
+<h3>A Simplified Object.create</h3>
+
+<p>We all have to consider that current descriptors verbosity and concept is <a href="https://mail.mozilla.org/pipermail/es-discuss/2012-November/026716.html">"*trolling*" major ECMAScript experts in the world</a> too. <code>Object.create</code> is not natural for JS developers and it makes things more complex than ever. Same descriptors verbosity applied for what should be the <code>new function</code> substitute ... in this sense it was a failure! How about redefining objects from others?</p>
+
+<pre><code>// ES5 Object.create
+var instance = Object.create(
+  sourceObject,
+  {
+    name:
+    {
+      value: "instance"
+    },
+    age:
+    {
+      value: 34
+    },
+    toString:
+    {
+      value: function () {
+        // isn't the `this` ambiguous here ?
+        // I would expect to refer to the toString descriptor
+        return "Hi, I am " + this.name + ", and I am " this.age;
+      }
+    }
+  }
+);
+
+// redefine.js
+var instance = redefine.from(
+  sourceObject,
+  {
+    name: "instance",
+    age: 34,
+    toString: function () {
+      return "Hi, I am " + this.name + ", and I am " this.age;
+    }
+  }
+);
+</code></pre>
+
+<p>I hope you agree that every time we define a method where <code>this</code> is used inside another context, as the descriptor is, looks so confusing!
+The descriptor is just an object and it could be used differently in other pieces of logic so that if invoked a part everything will fail there.</p>
+
+<p>In few words, <code>redefine.js</code> can also be <strong>less ambiguous</strong> than ES5!</p>
+
+<h3>Lazy Property Definition Pattern Included</h3>
+
+<p>I have described this pattern in <a href="http://webreflection.blogspot.com/2013/01/the-power-of-getters.html">The Power Of Getters</a> entry in my blog.</p>
+
+<p>However, these two comments left me with too many thoughts about ES5 and the fact that really is not easy to understand for developers.</p>
+
+<blockquote>
+<p><strong>Adrien Risser</strong> ... Andrea, every post of yours is a brainfuck! Understanding barely most of what you describe, I can't say I see how I would use all of or just a part of it in any project of mine.</p>
+</blockquote>
+
+<p>or even worst ...</p>
+
+<blockquote>
+<p><strong>jonz</strong> ... Right now this <em>syntax seems like obfuscation but the patterns it supports are what I've always wanted</em>, I wonder if it will ever become familiar.</p>
+</blockquote>
+
+<p>So you are right guys, the way ES5 lets us implement amazing new patterns and possibilities is even hard to understand or imagine. This is why <code>redefine.js</code> comes with a pattern many other programming languages can only dream about: the memory efficient and performance oriented <strong>inherited getter replaced on demand with a direct property access</strong>! (BOOM, I know your mind just blown!)</p>
+
+<pre><code>// what you would do today in ES3 classes
+function MyClass() {
+  this.handlersIMightNeed = {};
+  this.propertiesIMightLookFor = [];
+  this.stuffNotSureIfEvenUse = {};
+  this.methodThatShouldBindWhenNeeded =
+    this.method.bind(this);
+}
+</code></pre>
+
+<p>Above snippet creates 4 extra objects per each instance of <code>MyClass</code>. This is a <a href="http://jsperf.com/the-power-of-getters-element">memory disaster prone approach plus is really slow during instance creation</a> you can easily compare checking the <em>Element_Getter</em> results across all browsers and engines. We also force our syntax to be ES3 because if the prototype of MyClass would have been defined via <code>Object.defineProperties()</code> and these were not <code>configurable</code> or <code>writable</code>, this is what we should really do in order to have an equivalent behavior in our code.</p>
+
+<pre><code>// what we should do if MyClass.prototype
+// was defined with these properties as defaults
+function MyClass() {
+  Object.defineProperty(this,
+    "handlersIMightNeed", {value: {}});
+  Object.defineProperty(this,
+    "propertiesIMightLookFor", {value: []});
+  Object.defineProperty(this,
+    "stuffNotSureIfEvenUse", {value: {}});
+  Object.defineProperty(this,
+    "methodThatShouldBindWhenNeeded",
+    {value: this.method.bind(this)});
+}
+</code></pre>
+
+<p>This ain't going anywhere, and this is why ES5 is keeping developers far away from its goodness. So, how about <code>redefine.later()</code> to obtain the desired pattern ?</p>
+
+<pre><code>var later = redefine.later;
+// redefine.js lazy getter replacement
+function MyClass(){
+  // nothing to do here
+  // it cannot be faster!
+}
+redefine(
+  MyClass.prototype,
+  {
+    handlersIMightNeed: later(function(){
+      return {};
+    }),
+    propertiesIMightLookFor: later(function(){
+      return [];
+    }),
+    stuffNotSureIfEvenUse: later(function(){
+      return {};
+    }),
+    methodThatShouldBindWhenNeeded: later(function(){
+      return this.method.bind(this);
+    })
+  }
+);
+</code></pre>
+
+<p>There, a <strong>zero costs</strong> runtime instance creation where all those properties will be assigned as direct properties, rather than getters, when and only if the instance is using, or better, accessing them. These properties are also all deletable by default, unless specified differently, so that it's easy to reset hard a property and reassign it later on when, and if, needed.</p>
+
+<h3>More Robust Than ES5</h3>
+
+<p>There is a potential hole in ES5 specifications about descriptors, inherited properties are considered too. This is an example of how to destroy any library I know based on ES5:</p>
+
+<pre><code>// malicious code
+Object.prototype.get = function screwed(){
+  // deal with it
+};
+Object.prototype.configurable =
+Object.prototype.enumerable =
+Object.prototype.writable = true;
+
+// your code
+var o = Object.defineProperty({}, "key", {value: "value"});
+</code></pre>
+
+<p><strong>TypeError</strong> <code>Invalid property. 'value' present on property with getter or setter.</code></p>
+
+<p>This would never happen in <code>redefine.js</code> world.</p>
+
+<pre><code>var o = redefine({}, "key", "value");
+o.key; // "value", all good
+</code></pre>
+
+<p>Happy coding!</p>
+
+<h3>API</h3>
+
+<h4>redefine()</h4>
+
+<p>This is the main function and the only exported object. It does basically one thing but it has different overloads to do that:</p>
+
+<ul>
+<li>
+<code>redefine(obj:Object, key:string, value:any[, defaults:Object]):Object</code>, returns the first argument and define a value straight forward using ES5 defaults unless specified differently.
+This signature has these two kind of overloads
+
+<ul>
+<li>
+<code>redefine(obj:Object, key:string, value:As[, defaults:Object]):Object</code>, returns the first argument and define a property <code>key</code> using <code>redefine.as({descriptor})</code> as value descriptor. <code>As</code> is an internal, private, class that overrides any default, if specified, or inherited behavior.</li>
+<li>
+<code>redefine(obj:Object, key:string, value:Later[, defaults:Object]):Object</code>, returns the first argument and define a property <code>key</code> as lazily accessed and replaced as direct property that could be deleted at any time in order to reuse the inherited getter. <code>Later</code> is an internal, private, class that overrides any default, if specified, or inherited behavior.</li>
+</ul>
+</li>
+<li>
+<code>redefine(obj:Object, properties:Object[, defaults:Object])</code>, returns the first argument, it does exactly what other overloads do in this case looping through own properties in the specified <code>properties</code> Object.</li>
+</ul><h3>redefine.from()</h3>
+
+<p>This semantic method is similar to ES5 <code>Object.create</code> except descriptors are those accepted by <code>redefine()</code> and <code>defaults</code> can be used as well.</p>
+
+<ul>
+<li>
+<code>redefine.from(source:object[, properties:Object[, defaults:Object]]):Object</code> returns a new instance where <code>source.isPrototypeOf(returnedObject)</code>. Please note <code>null</code> is possible too and the second argument, optional as optional is the third one, can be used to redefine properties.</li>
+<li>
+<code>redefine.from(Class:Function[, properties:Object[, defaults:Object]]):Object</code> returns an <code>instanceof Class</code>, using <code>Class.prototype</code> as extend.</li>
+</ul><p>Here an example:</p>
+
+<pre><code>var son = redefine.from(
+  ClassName, {age: 123}
+);
+son.age; // 123
+son instanceof ClassName; // true
+ClassName.prototype.isPrototypeOf(son); // true
+</code></pre>
+
+<p>Creating instances from classes is the most common pattern in JS but if it's really needed to extend a function , rather than its prototype, this method is not the best one but it's possible to hack this behavior, if really needed, in an ugly way such <code>function df(){} df.prototype = Class; var o = redefine.from(df);</code>. Highly discouraged, user defined instance of functions cannot be even invoked, just saying...</p>
+
+<h4>redefine.as()</h4>
+
+<p>This semantic method returns an <code>instanceof As</code> with properties specified in the <code>descriptor</code> addressed once at initialization time.</p>
+
+<pre><code>var ES3Like = redefine.as({
+  enumerable: true,
+  configurable: true,
+  writable: true
+});
+
+// later on, reused to define all ES3 classes
+redefine(
+  MyES3Class.prototype,
+  {... all properties here ...},
+  ES3Like // as defaults
+);
+</code></pre>
+
+<h4>redefine.later()</h4>
+
+<p>This semantic method returns an <code>instanceof Later</code> object which aim is to be recognized later on in order to define a lazy getter replacement with direct property access pattern, an innovative pattern described in <a href="http://webreflection.blogspot.com/2013/01/the-power-of-getters.html">The Power Of Getters</a> post.</p>
+
+<pre><code>var setAsObjectLaterOn = redefine.later(function (){
+  return {};
+});
+
+// in some class
+redefine(
+  MyEvent.prototype,
+  {
+    handlers: setAsObjectLaterOn
+  }
+);
+
+// so that no property is created runtime
+var me = new MyEvent;
+// but only, and once, when/if needed
+me.handlers.test = listener;
+</code></pre>
+
+<p>It is possible to use a descriptor in order to overwrite the default configuration for this use case which is <code>{configurable:true, writable:false, enumerable:false}</code>. In this case, the <code>value</code> should be the callback able to return the lazily defined property.</p>
+
+<pre><code>var setAsObjectLaterOn = redefine.later({
+  writable: true,     //we want be able to change it later on
+  enumerable: true,   // shows up in for/in loops
+  configurable: false,// once define there's no way to delete it
+  value: function (){
+    return {};
+  }
+});
+</code></pre>
+
+<p>I see what you are thinking about: "*What? How can those properties have value and writable if we are defining a getter?*" Did I mention this method is called <code>later()</code> because is later that the property is define through the inherited getter ? :-)</p>
+
+<h3>Libraries Compatibility</h3>
+
+<p>The <code>redefine.js</code> API is compatible with <a href="http://underscorejs.org">Underscore</a> and <a href="http://lodash.com">Lo-Dash</a> too as <code>_.redefine</code> utility. Bear in mind, <strong>you don't need these libraries</strong> at all, in fact <code>redefine.js</code> is completely dependencies free but in order to avoid global scope pollution the <code>redefine</code> function is defined into a global <code>_</code> object. If this is not present it is created, while if it's already there, is simply enriched.</p>
+
+<p>In <em>node.js</em> you can use require</p>
+
+<pre><code>npm install redefine
+
+var
+  redefine = require('redefine').redefine,
+  as = redefine.as,
+  from = redefine.from,
+  later = redefine.later
+;
+</code></pre>
+
+<h3>Browsers And Engines Compatibility</h3>
+
+<p>It is possible to enhance redefine targets using some partial polyfill of ES5 <code>Object</code> methods such <code>create</code> or <a href="https://gist.github.com/4397807">inherit</a> and <code>defineProperty</code>. However, this library is targeting all browsers supported by <a href="http://blog.jquery.com/2012/07/01/jquery-1-9-and-2-0-tldr-edition/">jQuery 2.0</a> so here the list:</p>
+
+<ul>
+<li>Internet Explorer 9 and greater</li>
+<li>Chrome, and mobile</li>
+<li>Firefox, and mobile</li>
+<li>Opera, and mobile</li>
+<li>Safari, and mobile</li>
+<li>Webkit stock browsers for mobile</li>
+<li>node.js</li>
+<li>Rhino</li>
+</ul><p>Other server side engines such <strong>Ringo</strong> should be supported too since these are compatible with ES5 and ES5.1. The best way to know if your device, browser, or server side JS engine is working is to <a href="https://github.com/WebReflection/wru">grab wru</a> and run those tests :-)</p>
+
+<h3>100% Code Coverage</h3>
+
+<p>You can check examples and all tests to <code>redefine()</code>, <code>redefine.as(descriptr)</code>, <code>redefine.later(function value(){})</code>, or <code>redefine.from(proto)</code> in <a href="https://github.com/WebReflection/redefine/blob/master/test/redefine.js">this redefine.js file</a>.</p>
+
+<p>To launch tests in <strong>node.js</strong> simply this:</p>
+
+<pre><code>npm install wru
+wru test/redefine.js
+</code></pre>
+
+<p>To alunch tests in any browser simply do <code>open test.html</code> in OSX or just double click the test.html file. If your browser needs a web server in order to load files locally, simply this:</p>
+
+<pre><code>npm install polpetta
+polpetta ./
+</code></pre>
+
+<p>then check <a href="http://127.0.0.1:1337/test.html">your localhost/test.html</a> page and it should be green.</p>
+
+<h3>Shut Up And Give Me Code !</h3>
+
+<p>You can find the <a href="https://github.com/WebReflection/redefine/blob/master/src/redefine.js">source code here</a> and the <a href="https://github.com/WebReflection/redefine/blob/master/build/redefine.js">minified version here</a>.</p>
+
+<p>As you can see, once minzipped the library is <strong>about 0.6 KB</strong> and for an easier life enriched with new patterns I think is hard to expect a lighter utility.</p>
+
+<h3>De Facto Targets</h3>
+
+<p>These are those situations where you might want to use <code>redefine.js</code></p>
+
+<ul>
+<li>
+<code>node.js</code> development, or generally speaking any ES5 capable server side environment. The fact <code>redefine.js</code> is more robust should be an extra reason to adopt it.</li>
+<li>Smartphones, since nowadays, all of them support ES5</li>
+<li>modern desktop browsers and modern libraries</li>
+</ul><p>Enjoy!</p>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="owner">
+      <p><a href="https://github.com/WebReflection" class="avatar"><img src="https://secure.gravatar.com/avatar/799a8a6502aff3268519382ea2837d4b?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png" width="48" height="48"/></a> <a href="https://github.com/WebReflection">WebReflection</a> maintains <a href="https://github.com/WebReflection/redefine">redefine.js</a></p>
+
+
+      </div>
+      <div class="creds">
+        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="http://twitter.com/jonrohan/">Jon Rohan</a></small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+    <a href="https://github.com/WebReflection/redefine/tarball/master" class="tar">tar</a><a href="https://github.com/WebReflection/redefine/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
+    <p class="name"></p>
+  </div>
+
+  
+</body>
+</html>
