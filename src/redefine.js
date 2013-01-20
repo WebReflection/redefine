@@ -169,9 +169,10 @@ var _ = this._ = function(_, Function, Object) {
   redefine.from = from;
   redefine.later = later;
   redefine.defaults = {};
-  
+
+  // var redefine = require("redefine");
   if ("undefined" !== typeof module && module.exports) {
-    module.exports = redefine;
+    (module.exports = redefine).redefine = redefine;
   }
 
   // there you are ...
