@@ -287,7 +287,7 @@ Got it? Now ...
     this.propertyIsEnumerable("problem"); // false
     this.problem = {}; // nope
     delete this.problem; // false
-    this.problem; // "now we talk"
+    this.problem; // "solved"
 
 If you are wondering about **performance** there are many things to consider behind `redefine.js` and one of these is that performance are really good for what it offer. While is usually slower on desktop, is [almost as fast in older Android 2.3 devices](http://jsperf.com/redefine-js) where performance matters the most.
 
