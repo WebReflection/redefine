@@ -289,7 +289,9 @@ Got it? Now ...
     delete this.problem; // false
     this.problem; // "solved"
 
-If you are wondering about **performance** there are many things to consider behind `redefine.js` and one of these is that performance are really good for what it offer. While is usually slower on desktop, is [almost as fast in older Android 2.3 devices](http://jsperf.com/redefine-js) where performance matters the most.
+If you are wondering about **performance** there are many things to consider behind `redefine.js` and one of these is that performance are really good for what it offers.
+
+While is usually slightly slower on desktop, `redefine.js` is [almost as fast in older Android 2.3 devices](http://jsperf.com/redefine-js) where performance matters the most.
 
 `redefine.js` is indeed suitable for mobile phones, even if quite old!
 
