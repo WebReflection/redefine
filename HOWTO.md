@@ -116,6 +116,7 @@ This is how we can define the prototype of the `Emitter` class.
           if (type in this._handlers) {
             this._handlers[type].forEach(emit, data);
           }
+          return this;
         },
         on: function (type, handler) {
           var list = this._getList(type);
@@ -134,6 +135,7 @@ This is how we can define the prototype of the `Emitter` class.
               }
             }
           }
+          return this;
         },
         _getList: function (type) {
           return this._handlers[type] || (
@@ -162,6 +164,7 @@ When listeners are removed, both Array used as type list and `_handlers` are rem
             if (type in this._handlers) {
               this._handlers[type].forEach(emit, data);
             }
+            return this;
           }
         },
         on: {
@@ -184,6 +187,7 @@ When listeners are removed, both Array used as type list and `_handlers` are rem
                 }
               }
             }
+            return this;
           }
         },
         _getList: {
