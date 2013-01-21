@@ -8,7 +8,7 @@ ES5 verbosity is not just annoying, is also *spaghetti prone*. The inability to 
 
     // classic ES5 syntax
     Object.defineProperties(
-      SomeClass.protottype,
+      SomeClass.prototype,
       {
         method: {
           value: function () {
@@ -64,7 +64,7 @@ The powerful simplified API lets us define **defaults** too, so imagine we want 
 
     // ES5 has no defaults
     Object.defineProperties(
-      SomeClass.protottype,
+      SomeClass.prototype,
       {
         method: {
           configurable: true,
