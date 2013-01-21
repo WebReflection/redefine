@@ -176,7 +176,15 @@ var _ = this._ = function(_, Function, Object) {
   }
 
   // there you are ...
-  _.redefine = redefine;
+  _.mixin ?
+    // Lo-Dash or Underscore
+    // _(object).redefine(property, value)
+    // _(object).redefine(properties)
+    // _.redefine(object, properties)
+    _.mixin({redefine: redefine}) :
+    _.redefine = redefine
+  ;
+
   return _;
 
 }(_ || this, Function, Object);
