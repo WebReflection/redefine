@@ -129,7 +129,7 @@ wru.test([{
     wru.assert("enumerable", o.propertyIsEnumerable("key"));
     delete o.key;
     wru.assert("configurable", !("key" in o));
-    o = redefine({}, "key", "value", {writable: true, enumerable: true, enumerable: true});
+    o = redefine({}, "key", "value", {writable: true, enumerable: true});
     o.key = 123;
     wru.assert("not writable", o.key === 123);
     wru.assert("enumerable", o.propertyIsEnumerable("key"));
