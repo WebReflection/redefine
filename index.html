@@ -44,33 +44,33 @@
 
 <p>ES5 verbosity is not just annoying, is also <em>spaghetti prone</em>. The inability to group few descriptors together for one or more properties is inefficient too because of the amount of garbage we create at runtime to define all properties we need.</p>
 
-<pre><code>// classic ES5 syntax
-Object.defineProperties(
-  SomeClass.prototype,
-  {
-    method: {
-      value: function () {
-        // the method
-      }
-    },
-    property: {
-      enumerable: true,
-      value: "the property"
-    }
-  }
-);
-</code></pre>
+<div class="highlight"><pre><span class="c1">// classic ES5 syntax</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperties</span><span class="p">(</span>
+  <span class="nx">SomeClass</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">value</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// the method</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nx">property</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="nx">value</span><span class="o">:</span> <span class="s2">"the property"</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">);</span>
+</pre></div>
 
 <p>To define one method and one property we have used 3 extra objects: the properties wrapper, and each property descriptor. In case we were planning to make a list of properties all enumerable, as well as we could decide for writable or configurable, we would have repeated that pattern all over, resulting in a giant piece of JavaScript that will look like <code>enumerable:true</code> and nothing else. We also have some difficulty to understand what is each property about because the way we are familiar with is this one:</p>
 
-<pre><code>// the familiar JS approach
-SomeClass.prototype = {
-  method: function () {
-    // the method
-  },
-  property: "the property"
-};
-</code></pre>
+<div class="highlight"><pre><span class="c1">// the familiar JS approach</span>
+<span class="nx">SomeClass</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">method</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// the method</span>
+  <span class="p">},</span>
+  <span class="nx">property</span><span class="o">:</span> <span class="s2">"the property"</span>
+<span class="p">};</span>
+</pre></div>
 
 <p>Above snippet is not just more elegant and clean, is also better at runtime and much easier to read. In ES5, as example, when we see a function is not necessarily because that is a method, it might be a getter or setter too so we have to pay a lot of attention when we look at the code.</p>
 
@@ -78,131 +78,131 @@ SomeClass.prototype = {
 
 <p>So why cannot we have the best from both worlds? An easy to read and naturally understand syntax with the ability to switch ES5 power <em>on or off on demand</em>?</p>
 
-<pre><code>// redefine.js
-redefine(
-  SomeClass.prototype, {
-  method: function () {
-    // the method
-  },
-  property: "the property"
-});
-</code></pre>
+<div class="highlight"><pre><span class="c1">// redefine.js</span>
+<span class="nx">redefine</span><span class="p">(</span>
+  <span class="nx">SomeClass</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
+  <span class="nx">method</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// the method</span>
+  <span class="p">},</span>
+  <span class="nx">property</span><span class="o">:</span> <span class="s2">"the property"</span>
+<span class="p">});</span>
+</pre></div>
 
-<p>The best part about <code>redefine.js</code> is its <strong>ambiguity freee</strong> approach, granted by hidden classes understood at definition time, a technique that lets us switch <code>power on</code> when and if needed. As example, the very first <code>Object.definepropeties</code> snippet is not just setting properties, is also defining one of them as <code>enumerable</code>.</p>
+<p>The best part about <code>redefine.js</code> is its <strong>ambiguity free</strong> approach, granted by hidden classes understood at definition time, a technique that lets us switch <code>power on</code> when and if needed. As example, the very first <code>Object.definePropeties</code> snippet is not just setting properties, is also defining one of them as <code>enumerable</code>.</p>
 
-<pre><code>// identical to initial snippet
-redefine(
-  SomeClass.prototype, {
-  method: function () {
-    // the method
-  },
-  property: redefine.as({
-    enumerable: true,
-    value: "the property"
-  })
-});
-</code></pre>
+<div class="highlight"><pre><span class="c1">// identical to initial snippet</span>
+<span class="nx">redefine</span><span class="p">(</span>
+  <span class="nx">SomeClass</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
+  <span class="nx">method</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// the method</span>
+  <span class="p">},</span>
+  <span class="nx">property</span><span class="o">:</span> <span class="nx">redefine</span><span class="p">.</span><span class="nx">as</span><span class="p">({</span>
+    <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">value</span><span class="o">:</span> <span class="s2">"the property"</span>
+  <span class="p">})</span>
+<span class="p">});</span>
+</pre></div>
 
 <p>The powerful simplified API lets us define <strong>defaults</strong> too, so imagine we want that all properties should be <code>configurable</code>, <code>enumerable</code>, and <code>writable</code> because we expect exactly same <em>ES3</em> behavior. This is what you would be forced to do in ES5:</p>
 
-<pre><code>// ES5 has no defaults
-Object.defineProperties(
-  SomeClass.prototype,
-  {
-    method: {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function () {
-        // the method
-      }
-    },
-    property: {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: "the property"
-    }
-  }
-);
-</code></pre>
+<div class="highlight"><pre><span class="c1">// ES5 has no defaults</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperties</span><span class="p">(</span>
+  <span class="nx">SomeClass</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">configurable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="nx">writable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="nx">value</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// the method</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nx">property</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">configurable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="nx">writable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="nx">value</span><span class="o">:</span> <span class="s2">"the property"</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">);</span>
+</pre></div>
 
 <p>It's kinda hard to tell anymore what is that code about, don't you agree? Now let's compare against <code>redefine()</code></p>
 
-<pre><code>// redefine.js
-redefine(
-  SomeClass.prototype,
-  {
-    method: function () {
-      // the method
-    },
-    property: "the property"
-  },
+<div class="highlight"><pre><span class="c1">// redefine.js</span>
+<span class="nx">redefine</span><span class="p">(</span>
+  <span class="nx">SomeClass</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="c1">// the method</span>
+    <span class="p">},</span>
+    <span class="nx">property</span><span class="o">:</span> <span class="s2">"the property"</span>
+  <span class="p">},</span>
 
-  // optional 3rd argument for defaults
-  {
-    configurable: true,
-    enumerable: true,
-    writable: true
-  }
-);
-</code></pre>
+  <span class="c1">// optional 3rd argument for defaults</span>
+  <span class="p">{</span>
+    <span class="nx">configurable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">writable</span><span class="o">:</span> <span class="kc">true</span>
+  <span class="p">}</span>
+<span class="p">);</span>
+</pre></div>
 
 <p>We focus on the definition of our meant behavior, rather than on each descriptor property. If we apply defaults in groups, the code will be much more organized too. Bear in mind that defaults can be overwritten by semantic <code>redefine.as()</code> definition.</p>
 
-<pre><code>redefine(
-  object,
-  {
-    prop: as({
-      enumerable: false,
-      value: theValue
-    })
-  },
-  {
-    enumerable: true
-  }
-);
-</code></pre>
+<div class="highlight"><pre><span class="nx">redefine</span><span class="p">(</span>
+  <span class="nx">object</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="nx">prop</span><span class="o">:</span> <span class="nx">as</span><span class="p">({</span>
+      <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="nx">value</span><span class="o">:</span> <span class="nx">theValue</span>
+    <span class="p">})</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">true</span>
+  <span class="p">}</span>
+<span class="p">);</span>
+</pre></div>
 
 <h3>A Simplified Object.create</h3>
 
 <p>We all have to consider that current descriptors verbosity and concept is <a href="https://mail.mozilla.org/pipermail/es-discuss/2012-November/026716.html">"*trolling*" major ECMAScript experts in the world</a> too. <code>Object.create</code> is not natural for JS developers and it makes things more complex than ever. Same descriptors verbosity applied for what should be the <code>new function</code> substitute ... in this sense it was a failure! How about redefining objects from others?</p>
 
-<pre><code>// ES5 Object.create
-var instance = Object.create(
-  sourceObject,
-  {
-    name:
-    {
-      value: "instance"
-    },
-    age:
-    {
-      value: 34
-    },
-    toString:
-    {
-      value: function () {
-        // isn't the `this` ambiguous here ?
-        // I would expect to refer to the toString descriptor
-        return "Hi, I am " + this.name + ", and I am " this.age;
-      }
-    }
-  }
-);
+<div class="highlight"><pre><span class="c1">// ES5 Object.create</span>
+<span class="kd">var</span> <span class="nx">instance</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span>
+  <span class="nx">sourceObject</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="nx">name</span><span class="o">:</span>
+    <span class="p">{</span>
+      <span class="nx">value</span><span class="o">:</span> <span class="s2">"instance"</span>
+    <span class="p">},</span>
+    <span class="nx">age</span><span class="o">:</span>
+    <span class="p">{</span>
+      <span class="nx">value</span><span class="o">:</span> <span class="mi">34</span>
+    <span class="p">},</span>
+    <span class="nx">toString</span><span class="o">:</span>
+    <span class="p">{</span>
+      <span class="nx">value</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// isn't the `this` ambiguous here ?</span>
+        <span class="c1">// I would expect to refer to the toString descriptor</span>
+        <span class="k">return</span> <span class="s2">"Hi, I am "</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">", and I am "</span> <span class="k">this</span><span class="p">.</span><span class="nx">age</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">);</span>
 
-// redefine.js
-var instance = redefine.from(
-  sourceObject,
-  {
-    name: "instance",
-    age: 34,
-    toString: function () {
-      return "Hi, I am " + this.name + ", and I am " this.age;
-    }
-  }
-);
-</code></pre>
+<span class="c1">// redefine.js</span>
+<span class="kd">var</span> <span class="nx">instance</span> <span class="o">=</span> <span class="nx">redefine</span><span class="p">.</span><span class="nx">from</span><span class="p">(</span>
+  <span class="nx">sourceObject</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="nx">name</span><span class="o">:</span> <span class="s2">"instance"</span><span class="p">,</span>
+    <span class="nx">age</span><span class="o">:</span> <span class="mi">34</span><span class="p">,</span>
+    <span class="nx">toString</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="s2">"Hi, I am "</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">", and I am "</span> <span class="k">this</span><span class="p">.</span><span class="nx">age</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">);</span>
+</pre></div>
 
 <p>I hope you agree that every time we define a method where <code>this</code> is used inside another context, as the descriptor is, looks so confusing!
 The descriptor is just an object and it could be used differently in other pieces of logic so that if invoked a part everything will fail there.</p>
@@ -227,59 +227,59 @@ The descriptor is just an object and it could be used differently in other piece
 
 <p>So you are right guys, the way ES5 lets us implement amazing new patterns and possibilities is even hard to understand or imagine. This is why <code>redefine.js</code> comes with a pattern many other programming languages can only dream about: the memory efficient and performance oriented <strong>inherited getter replaced on demand with a direct property access</strong>! (BOOM, I know your mind just blown!)</p>
 
-<pre><code>// what you would do today in ES3 classes
-function MyClass() {
-  this.handlersIMightNeed = {};
-  this.propertiesIMightLookFor = [];
-  this.stuffNotSureIfEvenUse = {};
-  this.methodThatShouldBindWhenNeeded =
-    this.method.bind(this);
-}
-</code></pre>
+<div class="highlight"><pre><span class="c1">// what you would do today in ES3 classes</span>
+<span class="kd">function</span> <span class="nx">MyClass</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">handlersIMightNeed</span> <span class="o">=</span> <span class="p">{};</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">propertiesIMightLookFor</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">stuffNotSureIfEvenUse</span> <span class="o">=</span> <span class="p">{};</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">methodThatShouldBindWhenNeeded</span> <span class="o">=</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">method</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
 
 <p>Above snippet creates 4 extra objects per each instance of <code>MyClass</code>. This is a <a href="http://jsperf.com/the-power-of-getters-element">memory disaster prone approach plus is really slow during instance creation</a> you can easily compare checking the <em>Element_Getter</em> results across all browsers and engines. We also force our syntax to be ES3 because if the prototype of MyClass would have been defined via <code>Object.defineProperties()</code> and these were not <code>configurable</code> or <code>writable</code>, this is what we should really do in order to have an equivalent behavior in our code.</p>
 
-<pre><code>// what we should do if MyClass.prototype
-// was defined with these properties as defaults
-function MyClass() {
-  Object.defineProperty(this,
-    "handlersIMightNeed", {value: {}});
-  Object.defineProperty(this,
-    "propertiesIMightLookFor", {value: []});
-  Object.defineProperty(this,
-    "stuffNotSureIfEvenUse", {value: {}});
-  Object.defineProperty(this,
-    "methodThatShouldBindWhenNeeded",
-    {value: this.method.bind(this)});
-}
-</code></pre>
+<div class="highlight"><pre><span class="c1">// what we should do if MyClass.prototype</span>
+<span class="c1">// was defined with these properties as defaults</span>
+<span class="kd">function</span> <span class="nx">MyClass</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="k">this</span><span class="p">,</span>
+    <span class="s2">"handlersIMightNeed"</span><span class="p">,</span> <span class="p">{</span><span class="nx">value</span><span class="o">:</span> <span class="p">{}});</span>
+  <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="k">this</span><span class="p">,</span>
+    <span class="s2">"propertiesIMightLookFor"</span><span class="p">,</span> <span class="p">{</span><span class="nx">value</span><span class="o">:</span> <span class="p">[]});</span>
+  <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="k">this</span><span class="p">,</span>
+    <span class="s2">"stuffNotSureIfEvenUse"</span><span class="p">,</span> <span class="p">{</span><span class="nx">value</span><span class="o">:</span> <span class="p">{}});</span>
+  <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="k">this</span><span class="p">,</span>
+    <span class="s2">"methodThatShouldBindWhenNeeded"</span><span class="p">,</span>
+    <span class="p">{</span><span class="nx">value</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">method</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">)});</span>
+<span class="p">}</span>
+</pre></div>
 
 <p>This ain't going anywhere, and this is why ES5 is keeping developers far away from its goodness. So, how about <code>redefine.later()</code> to obtain the desired pattern ?</p>
 
-<pre><code>var later = redefine.later;
-// redefine.js lazy getter replacement
-function MyClass(){
-  // nothing to do here
-  // it cannot be faster!
-}
-redefine(
-  MyClass.prototype,
-  {
-    handlersIMightNeed: later(function(){
-      return {};
-    }),
-    propertiesIMightLookFor: later(function(){
-      return [];
-    }),
-    stuffNotSureIfEvenUse: later(function(){
-      return {};
-    }),
-    methodThatShouldBindWhenNeeded: later(function(){
-      return this.method.bind(this);
-    })
-  }
-);
-</code></pre>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">later</span> <span class="o">=</span> <span class="nx">redefine</span><span class="p">.</span><span class="nx">later</span><span class="p">;</span>
+<span class="c1">// redefine.js lazy getter replacement</span>
+<span class="kd">function</span> <span class="nx">MyClass</span><span class="p">(){</span>
+  <span class="c1">// nothing to do here</span>
+  <span class="c1">// it cannot be faster!</span>
+<span class="p">}</span>
+<span class="nx">redefine</span><span class="p">(</span>
+  <span class="nx">MyClass</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="nx">handlersIMightNeed</span><span class="o">:</span> <span class="nx">later</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+      <span class="k">return</span> <span class="p">{};</span>
+    <span class="p">}),</span>
+    <span class="nx">propertiesIMightLookFor</span><span class="o">:</span> <span class="nx">later</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+      <span class="k">return</span> <span class="p">[];</span>
+    <span class="p">}),</span>
+    <span class="nx">stuffNotSureIfEvenUse</span><span class="o">:</span> <span class="nx">later</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+      <span class="k">return</span> <span class="p">{};</span>
+    <span class="p">}),</span>
+    <span class="nx">methodThatShouldBindWhenNeeded</span><span class="o">:</span> <span class="nx">later</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">method</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="p">})</span>
+  <span class="p">}</span>
+<span class="p">);</span>
+</pre></div>
 
 <p>There, a <strong>zero costs</strong> runtime instance creation where all those properties will be assigned as direct properties, rather than getters, when and only if the instance is using, or better, accessing them. These properties are also all deletable by default, unless specified differently, so that it's easy to reset hard a property and reassign it later on when, and if, needed.</p>
 
@@ -287,49 +287,45 @@ redefine(
 
 <p>There is a potential hole in ES5 specifications about descriptors, inherited properties are considered too. This is an example of how to destroy any library I know based on ES5:</p>
 
-<pre><code>// malicious code
-Object.prototype.get = function screwed(){
-  // deal with it
-};
-Object.prototype.configurable =
-Object.prototype.enumerable =
-Object.prototype.writable = true;
+<div class="highlight"><pre><span class="c1">// malicious code</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">screwed</span><span class="p">(){</span>
+  <span class="c1">// deal with it</span>
+<span class="p">};</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">configurable</span> <span class="o">=</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">enumerable</span> <span class="o">=</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">writable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
 
-// your code
-var o = Object.defineProperty({}, "key", {value: "value"});
-</code></pre>
+<span class="c1">// your code</span>
+<span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">({},</span> <span class="s2">"key"</span><span class="p">,</span> <span class="p">{</span><span class="nx">value</span><span class="o">:</span> <span class="s2">"value"</span><span class="p">});</span>
+</pre></div>
 
 <p><strong>TypeError</strong> <code>Invalid property. 'value' present on property with getter or setter.</code></p>
 
 <p>This would never happen in <code>redefine.js</code> world.</p>
 
-<pre><code>var o = redefine({}, "key", "value");
-o.key; // "value", all good
-</code></pre>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="nx">redefine</span><span class="p">({},</span> <span class="s2">"key"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">);</span>
+<span class="nx">o</span><span class="p">.</span><span class="nx">key</span><span class="p">;</span> <span class="c1">// "value", all good</span>
+</pre></div>
 
 <p>Happy coding!</p>
 
 <h3>API</h3>
 
-<h4>redefine()</h4>
+<h4>redefine(obj, properties)</h4>
 
 <p>This is the main function and the only exported object. It does basically one thing but it has different overloads to do that:</p>
 
 <ul>
 <li>
 <code>redefine(obj:Object, key:string, value:any[, defaults:Object]):Object</code>, returns the first argument and define a value straight forward using ES5 defaults unless specified differently.
-This signature has these two kind of overloads
-
-<ul>
+This signature has these two kind of overloads</li>
 <li>
 <code>redefine(obj:Object, key:string, value:As[, defaults:Object]):Object</code>, returns the first argument and define a property <code>key</code> using <code>redefine.as({descriptor})</code> as value descriptor. <code>As</code> is an internal, private, class that overrides any default, if specified, or inherited behavior.</li>
 <li>
 <code>redefine(obj:Object, key:string, value:Later[, defaults:Object]):Object</code>, returns the first argument and define a property <code>key</code> as lazily accessed and replaced as direct property that could be deleted at any time in order to reuse the inherited getter. <code>Later</code> is an internal, private, class that overrides any default, if specified, or inherited behavior.</li>
-</ul>
-</li>
 <li>
 <code>redefine(obj:Object, properties:Object[, defaults:Object])</code>, returns the first argument, it does exactly what other overloads do in this case looping through own properties in the specified <code>properties</code> Object.</li>
-</ul><h3>redefine.from()</h3>
+</ul><h4>redefine.from(proto)</h4>
 
 <p>This semantic method is similar to ES5 <code>Object.create</code> except descriptors are those accepted by <code>redefine()</code> and <code>defaults</code> can be used as well.</p>
 
@@ -340,67 +336,67 @@ This signature has these two kind of overloads
 <code>redefine.from(Class:Function[, properties:Object[, defaults:Object]]):Object</code> returns an <code>instanceof Class</code>, using <code>Class.prototype</code> as extend.</li>
 </ul><p>Here an example:</p>
 
-<pre><code>var son = redefine.from(
-  ClassName, {age: 123}
-);
-son.age; // 123
-son instanceof ClassName; // true
-ClassName.prototype.isPrototypeOf(son); // true
-</code></pre>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">son</span> <span class="o">=</span> <span class="nx">redefine</span><span class="p">.</span><span class="nx">from</span><span class="p">(</span>
+  <span class="nx">ClassName</span><span class="p">,</span> <span class="p">{</span><span class="nx">age</span><span class="o">:</span> <span class="mi">123</span><span class="p">}</span>
+<span class="p">);</span>
+<span class="nx">son</span><span class="p">.</span><span class="nx">age</span><span class="p">;</span> <span class="c1">// 123</span>
+<span class="nx">son</span> <span class="k">instanceof</span> <span class="nx">ClassName</span><span class="p">;</span> <span class="c1">// true</span>
+<span class="nx">ClassName</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">isPrototypeOf</span><span class="p">(</span><span class="nx">son</span><span class="p">);</span> <span class="c1">// true</span>
+</pre></div>
 
 <p>Creating instances from classes is the most common pattern in JS but if it's really needed to extend a function , rather than its prototype, this method is not the best one but it's possible to hack this behavior, if really needed, in an ugly way such <code>function df(){} df.prototype = Class; var o = redefine.from(df);</code>. Highly discouraged, user defined instance of functions cannot be even invoked, just saying...</p>
 
-<h4>redefine.as()</h4>
+<h4>redefine.as(descriptor)</h4>
 
 <p>This semantic method returns an <code>instanceof As</code> with properties specified in the <code>descriptor</code> addressed once at initialization time.</p>
 
-<pre><code>var ES3Like = redefine.as({
-  enumerable: true,
-  configurable: true,
-  writable: true
-});
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">ES3Like</span> <span class="o">=</span> <span class="nx">redefine</span><span class="p">.</span><span class="nx">as</span><span class="p">({</span>
+  <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="nx">configurable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="nx">writable</span><span class="o">:</span> <span class="kc">true</span>
+<span class="p">});</span>
 
-// later on, reused to define all ES3 classes
-redefine(
-  MyES3Class.prototype,
-  {... all properties here ...},
-  ES3Like // as defaults
-);
-</code></pre>
+<span class="c1">// later on, reused to define all ES3 classes</span>
+<span class="nx">redefine</span><span class="p">(</span>
+  <span class="nx">MyES3Class</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span>
+  <span class="p">{...</span> <span class="nx">all</span> <span class="nx">properties</span> <span class="nx">here</span> <span class="p">...},</span>
+  <span class="nx">ES3Like</span> <span class="c1">// as defaults</span>
+<span class="p">);</span>
+</pre></div>
 
-<h4>redefine.later()</h4>
+<h4>redefine.later(Object)</h4>
 
 <p>This semantic method returns an <code>instanceof Later</code> object which aim is to be recognized later on in order to define a lazy getter replacement with direct property access pattern, an innovative pattern described in <a href="http://webreflection.blogspot.com/2013/01/the-power-of-getters.html">The Power Of Getters</a> post.</p>
 
-<pre><code>var setAsObjectLaterOn = redefine.later(function (){
-  return {};
-});
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">setAsObjectLaterOn</span> <span class="o">=</span> <span class="nx">redefine</span><span class="p">.</span><span class="nx">later</span><span class="p">(</span><span class="kd">function</span> <span class="p">(){</span>
+  <span class="k">return</span> <span class="p">{};</span>
+<span class="p">});</span>
 
-// in some class
-redefine(
-  MyEvent.prototype,
-  {
-    handlers: setAsObjectLaterOn
-  }
-);
+<span class="c1">// in some class</span>
+<span class="nx">redefine</span><span class="p">(</span>
+  <span class="nx">MyEvent</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="nx">handlers</span><span class="o">:</span> <span class="nx">setAsObjectLaterOn</span>
+  <span class="p">}</span>
+<span class="p">);</span>
 
-// so that no property is created runtime
-var me = new MyEvent;
-// but only, and once, when/if needed
-me.handlers.test = listener;
-</code></pre>
+<span class="c1">// so that no property is created runtime</span>
+<span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MyEvent</span><span class="p">;</span>
+<span class="c1">// but only, and once, when/if needed</span>
+<span class="nx">me</span><span class="p">.</span><span class="nx">handlers</span><span class="p">.</span><span class="nx">test</span> <span class="o">=</span> <span class="nx">listener</span><span class="p">;</span>
+</pre></div>
 
 <p>It is possible to use a descriptor in order to overwrite the default configuration for this use case which is <code>{configurable:true, writable:false, enumerable:false}</code>. In this case, the <code>value</code> should be the callback able to return the lazily defined property.</p>
 
-<pre><code>var setAsObjectLaterOn = redefine.later({
-  writable: true,     //we want be able to change it later on
-  enumerable: true,   // shows up in for/in loops
-  configurable: false,// once define there's no way to delete it
-  value: function (){
-    return {};
-  }
-});
-</code></pre>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">setAsObjectLaterOn</span> <span class="o">=</span> <span class="nx">redefine</span><span class="p">.</span><span class="nx">later</span><span class="p">({</span>
+  <span class="nx">writable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>     <span class="c1">//we want be able to change it later on</span>
+  <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>   <span class="c1">// shows up in for/in loops</span>
+  <span class="nx">configurable</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span><span class="c1">// once define there's no way to delete it</span>
+  <span class="nx">value</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(){</span>
+    <span class="k">return</span> <span class="p">{};</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
 
 <p>I see what you are thinking about: "*What? How can those properties have value and writable if we are defining a getter?*" Did I mention this method is called <code>later()</code> because is later that the property is define through the inherited getter ? :-)</p>
 
@@ -411,14 +407,16 @@ me.handlers.test = listener;
 <p>In <em>node.js</em> you can use require</p>
 
 <pre><code>npm install redefine
-
-var
-  redefine = require('redefine').redefine,
-  as = redefine.as,
-  from = redefine.from,
-  later = redefine.later
-;
 </code></pre>
+
+<div class="highlight"><pre><span class="kd">var</span>
+  <span class="nx">redefine</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'redefine'</span><span class="p">),</span>
+  <span class="c1">// redefine = require('redefine').redefine, works too</span>
+  <span class="nx">as</span> <span class="o">=</span> <span class="nx">redefine</span><span class="p">.</span><span class="nx">as</span><span class="p">,</span>
+  <span class="nx">from</span> <span class="o">=</span> <span class="nx">redefine</span><span class="p">.</span><span class="nx">from</span><span class="p">,</span>
+  <span class="nx">later</span> <span class="o">=</span> <span class="nx">redefine</span><span class="p">.</span><span class="nx">later</span>
+<span class="p">;</span>
+</pre></div>
 
 <h3>Browsers And Engines Compatibility</h3>
 
@@ -445,7 +443,7 @@ var
 wru test/redefine.js
 </code></pre>
 
-<p>To alunch tests in any browser simply do <code>open test.html</code> in OSX or just double click the test.html file. If your browser needs a web server in order to load files locally, simply this:</p>
+<p>To launch tests in any browser simply do <code>open test.html</code> in OSX or just double click the test.html file. If your browser needs a web server in order to load files locally, simply this:</p>
 
 <pre><code>npm install polpetta
 polpetta ./
