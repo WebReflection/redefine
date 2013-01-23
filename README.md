@@ -366,7 +366,7 @@ The `redefine.js` API is compatible with [Underscore](http://underscorejs.org) a
 
 In *node.js* you can use require
 
-npm install redefine
+    npm install redefine
 
 ```javascript
 var
@@ -398,13 +398,13 @@ You can check examples and all tests to `redefine()`, `redefine.as(descriptr)`, 
 
 To launch tests in **node.js** simply this:
 
-npm install wru
-wru test/redefine.js
+    npm install wru
+    wru test/redefine.js
 
 To launch tests in any browser simply do `open test.html` in OSX or just double click the test.html file. If your browser needs a web server in order to load files locally, simply this:
 
-npm install polpetta
-polpetta ./
+    npm install polpetta
+    polpetta ./
 
 then check [your localhost/test.html](http://127.0.0.1:1337/test.html) page and it should be green.
 
