@@ -208,12 +208,12 @@ var _ = this._ = function(_, Function, Object) {
     // but at least it's consistent ^_^
     // Opera Mobile or all other browsers
     // won't be affected
-    create(redefine({},{_:later(Object)}))._;
-    /*
+    //create(redefine({},{_:later(Object)}))._;
+    //*
     create(defineProperty({},"_",{get:function(){
       defineProperty(this,"_",{value:"_"});
     }}))._
-    */
+    //*/
   } catch(o_O) {
     clear(nullObject);
     hasDescriptorBug = true;
