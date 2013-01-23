@@ -46,7 +46,7 @@ So why cannot we have the best from both worlds? An easy to read and naturally u
       property: "the property"
     });
 
-The best part about `redefine.js` is its **ambiguity freee** approach, granted by hidden classes understood at definition time, a technique that lets us switch `power on` when and if needed. As example, the very first `Object.definepropeties` snippet is not just setting properties, is also defining one of them as `enumerable`.
+The best part about `redefine.js` is its **ambiguity free** approach, granted by hidden classes understood at definition time, a technique that lets us switch `power on` when and if needed. As example, the very first `Object.definePropeties` snippet is not just setting properties, is also defining one of them as `enumerable`.
 
     // identical to initial snippet
     redefine(
@@ -253,7 +253,7 @@ Happy coding!
 
 ### API
 
-#### redefine()
+#### redefine(obj, properties)
 This is the main function and the only exported object. It does basically one thing but it has different overloads to do that:
 
   * `redefine(obj:Object, key:string, value:any[, defaults:Object]):Object`, returns the first argument and define a value straight forward using ES5 defaults unless specified differently.
@@ -262,7 +262,7 @@ This is the main function and the only exported object. It does basically one th
       * `redefine(obj:Object, key:string, value:Later[, defaults:Object]):Object`, returns the first argument and define a property `key` as lazily accessed and replaced as direct property that could be deleted at any time in order to reuse the inherited getter. `Later` is an internal, private, class that overrides any default, if specified, or inherited behavior.
   * `redefine(obj:Object, properties:Object[, defaults:Object])`, returns the first argument, it does exactly what other overloads do in this case looping through own properties in the specified `properties` Object.
 
-### redefine.from()
+### redefine.from(proto)
 This semantic method is similar to ES5 `Object.create` except descriptors are those accepted by `redefine()` and `defaults` can be used as well.
 
   * `redefine.from(source:object[, properties:Object[, defaults:Object]]):Object` returns a new instance where `source.isPrototypeOf(returnedObject)`. Please note `null` is possible too and the second argument, optional as optional is the third one, can be used to redefine properties.
@@ -279,7 +279,7 @@ Here an example:
 
 Creating instances from classes is the most common pattern in JS but if it's really needed to extend a function , rather than its prototype, this method is not the best one but it's possible to hack this behavior, if really needed, in an ugly way such `function df(){} df.prototype = Class; var o = redefine.from(df);`. Highly discouraged, user defined instance of functions cannot be even invoked, just saying...
 
-#### redefine.as()
+#### redefine.as(descriptor)
 This semantic method returns an `instanceof As` with properties specified in the `descriptor` addressed once at initialization time.
 
     var ES3Like = redefine.as({
@@ -295,7 +295,7 @@ This semantic method returns an `instanceof As` with properties specified in the
       ES3Like // as defaults
     );
 
-#### redefine.later()
+#### redefine.later(Object)
 This semantic method returns an `instanceof Later` object which aim is to be recognized later on in order to define a lazy getter replacement with direct property access pattern, an innovative pattern described in [The Power Of Getters](http://webreflection.blogspot.com/2013/01/the-power-of-getters.html) post.
 
     var setAsObjectLaterOn = redefine.later(function (){
@@ -366,7 +366,7 @@ To launch tests in **node.js** simply this:
     npm install wru
     wru test/redefine.js
 
-To alunch tests in any browser simply do `open test.html` in OSX or just double click the test.html file. If your browser needs a web server in order to load files locally, simply this:
+To launch tests in any browser simply do `open test.html` in OSX or just double click the test.html file. If your browser needs a web server in order to load files locally, simply this:
 
     npm install polpetta
     polpetta ./
