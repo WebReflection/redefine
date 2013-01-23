@@ -198,6 +198,7 @@ var _ = this._ = function(_, Function, Object) {
     _.redefine = redefine
   ;
 
+  wru.log(1);
   try {
     // Android 2.2 and 2.3 and webOS
     // plus Dolphin in older Androids
@@ -209,12 +210,14 @@ var _ = this._ = function(_, Function, Object) {
     // Opera Mobile or all other browsers
     // won't be affected
     create(redefine({},{_:later(Object)}))._;
+    wru.log(2);
     /*
     create(defineProperty({},"_",{get:function(){
       defineProperty(this,"_",{value:"_"});
     }}))._
     */
   } catch(o_O) {
+    wru.log(3);
     clear(nullObject);
     hasDescriptorBug = true;
   }
