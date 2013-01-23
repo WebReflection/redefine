@@ -119,6 +119,12 @@ var _ = this._ = function(_, Function, Object) {
       }
       return self[key];
     };
+    // to know more about this
+    // see hasDescriptorBug = true part at the bottom
+    if(hasDescriptorBug) {
+      // unfortunately inevitable for Android 2.2 and 2.3 devices
+      descriptor[CONFIGURABLE] = true;
+    }
     return descriptor;
   }
 
@@ -209,16 +215,11 @@ var _ = this._ = function(_, Function, Object) {
     // Opera Mobile or all other browsers
     // won't be affected
     create(redefine({},{_:later(Object)}))._;
-    /*
-    create(defineProperty({},"_",{get:function(){
-      defineProperty(this,"_",{value:"_"});
-    }}))._
-    //*/
   } catch(o_O) {
     clear(nullObject);
     hasDescriptorBug = true;
   }
-  hasDescriptorBug = true;
+
   return _;
 
 }(_ || this, Function, Object);
