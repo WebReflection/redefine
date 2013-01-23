@@ -287,7 +287,7 @@ This signature has these two kind of overloads
   * `redefine(obj:Object, key:string, value:Later[, defaults:Object]):Object`, returns the first argument and define a property `key` as lazily accessed and replaced as direct property that could be deleted at any time in order to reuse the inherited getter. `Later` is an internal, private, class that overrides any default, if specified, or inherited behavior.
   * `redefine(obj:Object, properties:Object[, defaults:Object])`, returns the first argument, it does exactly what other overloads do in this case looping through own properties in the specified `properties` Object.
 
-### redefine.from(proto)
+#### redefine.from(proto)
 This semantic method is similar to ES5 `Object.create` except descriptors are those accepted by `redefine()` and `defaults` can be used as well.
 
   * `redefine.from(source:object[, properties:Object[, defaults:Object]]):Object` returns a new instance where `source.isPrototypeOf(returnedObject)`. Please note `null` is possible too and the second argument, optional as optional is the third one, can be used to redefine properties.
