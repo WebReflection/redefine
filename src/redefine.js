@@ -9,9 +9,11 @@ var _ = this._ = function(_, Function, Object) {
     VALUE = "value",
     WRITABLE = "writable",
 
-    // from Object.prototype if _ was a new null;
+    // from Object || Object.prototype if _ has no polyfills;
     defineProperty = _.defineProperty || Object.defineProperty,
     hasOwnProperty = _.hasOwnProperty || Object.hasOwnProperty,
+    getOwnPropertyDescriptor = _.getOwnPropertyDescriptor ||
+                               Object.getOwnPropertyDescriptor,
 
     // from _ enriched through other libraries or just Object.create
     create = _.create || _.inherit || Object.create,
@@ -34,6 +36,8 @@ var _ = this._ = function(_, Function, Object) {
     // recycled object for a happier GC
     nullObject = create(null),
     valueObject = {},
+
+    hasDescriptorBug = false,
 
     // defined later on
     i, assign, remove
@@ -68,7 +72,7 @@ var _ = this._ = function(_, Function, Object) {
       value instanceof As ?
         value : (
           value instanceof Later ?
-            lazy(key, value) : (
+            lazy(object, key, value) : (
               valueObject[VALUE] = value, valueObject
             )
         )
@@ -86,7 +90,7 @@ var _ = this._ = function(_, Function, Object) {
     }
   }
 
-  function lazy(key, descriptor) {
+  function lazy(object, key, descriptor) {
     // trap these properties at definition time
     // and don't bother ever again!
     var
@@ -98,12 +102,21 @@ var _ = this._ = function(_, Function, Object) {
       self
     ;
     descriptor[GET] = function get() {
+      if(hasDescriptorBug) {
+        descriptor = getOwnPropertyDescriptor(object, key);
+        delete object[key];
+      }
       nullObject[VALUE] = callback.call(self = this);
       nullObject[CONFIGURABLE] = configurable;
       nullObject[ENUMERABLE] = enumerable;
       nullObject[WRITABLE] = writable;
       defineProperty(self, key, nullObject);
       clear(nullObject);
+      if (hasDescriptorBug) {
+        assign(descriptor, nullObject);
+        defineProperty(object, key, nullObject);
+        clear(nullObject);
+      }
       return self[key];
     };
     return descriptor;
@@ -184,6 +197,26 @@ var _ = this._ = function(_, Function, Object) {
     _.mixin({redefine: redefine}) :
     _.redefine = redefine
   ;
+
+  try {
+    // Android 2.2 and 2.3 and webOS
+    // plus Dolphin in older Androids
+    // have a really weird bug whre inherited
+    // getters cannot be set as value
+    // in that case is a bit more complicated
+    // to obtain a later() behavior
+    // but at least it's consistent ^_^
+    // Opera Mobile or all other browsers
+    // won't be affected
+    create(redefine({},"_",later(Object)))._;
+    /*
+    create(defineProperty({},"_",{get:function(){
+      defineProperty(this,"_",{value:"_"});
+    }}))._
+    */
+  } catch(o_O) {
+    hasDescriptorBug = true;
+  }
 
   return _;
 
