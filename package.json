@@ -1,6 +1,6 @@
 {
   "name": "redefine",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A lightweight utility for an easier ES5 aware object properties definition introducing new, performance oriented, patterns.",
   "homepage": "https://github.com/WebReflection/redefine",
   "keywords": [
