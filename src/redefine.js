@@ -183,10 +183,23 @@ var _ = this._ = function(_, Function, Object) {
     return object;
   }
 
+  // create a partial implementation
+  // with defaults pre assigned
+  function using(defaults) {
+    return function redefine(object, key, value) {
+      typeof key == "string" ?
+        define(object, key, value, defaults) :
+        defineAll(object, key, defaults)
+      ;
+      return object;
+    };
+  }
+
   // semantic exports
   redefine.as = as;
   redefine.from = from;
   redefine.later = later;
+  redefine.using = using;
   redefine.defaults = {};
 
   // var redefine = require("redefine");

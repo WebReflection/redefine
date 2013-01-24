@@ -364,4 +364,42 @@ assert(son instanceof Source);
 
 
   }
+},{
+  name: "partial application",
+  test: function() {
+    var enumerable = redefine.using({
+      enumerable: true
+    });
+    var o = enumerable({}, "test", true);
+    wru.assert("correct value", o.test === true);
+    wru.assert("enumerable", o.propertyIsEnumerable("test"));
+    delete o.test;
+    wru.assert("not configurable", o.test === true);
+    o.test = "wut";
+    wru.assert("not writable", o.test === true);
+    o = redefine.using({
+      configurable: true
+    })({}, "test", true);
+    wru.assert("correct value", o.test === true);
+    wru.assert("not enumerable", !o.propertyIsEnumerable("test"));
+    o.test = "wut";
+    wru.assert("not writable", o.test === true);
+    delete o.test;
+    wru.assert("configurable", !o.test);
+    o = redefine.using({
+      configurable: true,
+      enumerable: true
+    })({}, "test", true);
+    o.test = "wut";
+    wru.assert("not writable", o.test === true);
+    wru.assert("correct value", o.test === true);
+    wru.assert("enumerable", o.propertyIsEnumerable("test"));
+    delete o.test;
+    wru.assert("configurable", !o.test);
+    o = redefine.using({
+      writable: true
+    })({}, "test", true);
+    o.test = "wut";
+    wru.assert("not writable", o.test === "wut");
+  }
 }]);

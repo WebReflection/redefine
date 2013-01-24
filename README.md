@@ -361,6 +361,20 @@ var setAsObjectLaterOn = redefine.later({
 
 I see what you are thinking about: "*What? How can those properties have value and writable if we are defining a getter?*" Did I mention this method is called `later()` because is later that the property is define through the inherited getter ? :-)
 
+#### redefine.using(descriptor)
+This is to simplify partial implementations. As example, to use redefine to create enumerable properties:
+
+```javascript
+var enumerable = redefine.using({
+  enumerable: true
+});
+
+// any property we want
+var o = enumerable({}, "test", 123);
+o.propertyIsEnumerable("test"); // true
+o.test; // 123
+````
+
 ### Libraries Compatibility
 The `redefine.js` API is compatible with [Underscore](http://underscorejs.org) and [Lo-Dash](http://lodash.com) too as `_.redefine` utility. Bear in mind, **you don't need these libraries** at all, in fact `redefine.js` is completely dependencies free but in order to avoid global scope pollution the `redefine` function is defined into a global `_` object. If this is not present it is created, while if it's already there, is simply enriched.
 
