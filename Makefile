@@ -24,6 +24,7 @@ test-online:
 	cp test/* ../tmp/test
 	cp test.html ../tmp
 	git checkout gh-pages
+	git pull --rebase
 	cp -r ../tmp/* ./
 	git add .
 	git commit -m 'Auto-update tests'
