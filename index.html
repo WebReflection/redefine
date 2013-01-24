@@ -400,6 +400,20 @@ This signature has these two kind of overloads</li>
 
 <p>I see what you are thinking about: "*What? How can those properties have value and writable if we are defining a getter?*" Did I mention this method is called <code>later()</code> because is later that the property is define through the inherited getter ? :-)</p>
 
+<h4>redefine.using(descriptor)</h4>
+
+<p>This is to simplify partial implementations. As example, to use redefine to create enumerable properties:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">enumerable</span> <span class="o">=</span> <span class="nx">redefine</span><span class="p">.</span><span class="nx">using</span><span class="p">({</span>
+  <span class="nx">enumerable</span><span class="o">:</span> <span class="kc">true</span>
+<span class="p">});</span>
+
+<span class="c1">// any property we want</span>
+<span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="nx">enumerable</span><span class="p">({},</span> <span class="s2">"test"</span><span class="p">,</span> <span class="mi">123</span><span class="p">);</span>
+<span class="nx">o</span><span class="p">.</span><span class="nx">propertyIsEnumerable</span><span class="p">(</span><span class="s2">"test"</span><span class="p">);</span> <span class="c1">// true</span>
+<span class="nx">o</span><span class="p">.</span><span class="nx">test</span><span class="p">;</span> <span class="c1">// 123</span>
+</pre></div>
+
 <h3>Libraries Compatibility</h3>
 
 <p>The <code>redefine.js</code> API is compatible with <a href="http://underscorejs.org">Underscore</a> and <a href="http://lodash.com">Lo-Dash</a> too as <code>_.redefine</code> utility. Bear in mind, <strong>you don't need these libraries</strong> at all, in fact <code>redefine.js</code> is completely dependencies free but in order to avoid global scope pollution the <code>redefine</code> function is defined into a global <code>_</code> object. If this is not present it is created, while if it's already there, is simply enriched.</p>
