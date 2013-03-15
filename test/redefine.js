@@ -402,4 +402,61 @@ assert(son instanceof Source);
     o.test = "wut";
     wru.assert("not writable", o.test === "wut");
   }
+},{
+  name: 'Class',
+  test: function () {
+    var invoked = 0;
+    var A = redefine.Class({
+      statics: {
+        instances: 0
+      },
+      constructor: function A() {
+        invoked++;
+        A.instances++;
+      },
+      prop: 'propA',
+      method: function method() {
+        return this.prop;
+      }
+    });
+    wru.assert('still never invoked', invoked === 0);
+    var a = new A;
+    wru.assert('basic inheritance', a instanceof A);
+    wru.assert('statics worked', A.instances === 1);
+    wru.assert('method/prop there', a.method() === a.prop && a.prop === 'propA');
+    var B = redefine.Class({
+      extend: A,
+      statics: {
+        something: 'else'
+      },
+      constructor: function B() {
+        B.something += '!';
+      },
+      prop: 'propB'
+    });
+    var b = new B;
+    wru.assert('extended inheritance', b instanceof B && b instanceof A);
+    wru.assert('A static inherited', B.instances++ === 1);
+    wru.assert('A statics untouched', A.instances === 1);
+    wru.assert('B statics writables', B.instances === 2);
+    wru.assert('B statics worked', B.something === 'else!');
+    wru.assert('method/prop there', b.method() === b.prop && b.prop === 'propB');
+    wru.assert('nothing changed in a', a.method() === a.prop && a.prop === 'propA');
+    var C = redefine.Class({
+      extend: B,
+      prop: 'propC',
+      whatever: function () {
+        return this.method();
+      }
+    });
+    var c = new C;
+    wru.assert('extended inheritance', c instanceof C && c instanceof B && c instanceof A);
+    wru.assert('C statics worked', C.something === 'else!' && C.instances++ === 2 && B.instances === 2 && A.instances === 1);
+    wru.assert('method/prop there', c.method() === c.prop && c.prop === 'propC');
+    wru.assert('extra method', c.whatever() === c.method());
+    wru.assert('nothing changed in b', b.method() === b.prop && b.prop === 'propB');
+    wru.assert('nothing changed in a', a.method() === a.prop && a.prop === 'propA');
+    wru.assert('all inherited methods the same', a.method === c.method && b.method === c.method);
+    
+  }
 }]);

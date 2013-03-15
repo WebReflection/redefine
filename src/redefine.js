@@ -3,9 +3,12 @@ var _ = this._ = function(_, Function, Object) {
   var
     // scoped shortcuts/constants
     CONFIGURABLE = "configurable",
+    CONSTRUCTOR = "constructor",
     ENUMERABLE = "enumerable",
+    EXTEND = "extend",
     GET = "get",
     SET = "set",
+    STATICS = "statics",
     VALUE = "value",
     WRITABLE = "writable",
 
@@ -139,23 +142,33 @@ var _ = this._ = function(_, Function, Object) {
     return new As(descriptor);
   }
 
+  // common simplified internal utility
+  function createFromGeneric(object) {
+    return create(isFunction(object) ?
+        object.prototype : object
+    );
+  }
+
   // creates an instanceof the first argument
   // then applies properties, if specified
   // using defaults too
   function from(object, properties, defaults) {
-    var instance = create(typeof object == "function" ?
-      object.prototype : object
-    );
+    var instance = createFromGeneric(object);
     return properties ?
       redefine(instance, properties, defaults) :
       instance
     ;
   }
 
+  // common simplified internal utility
+  function isFunction(object) {
+    return typeof object === "function";
+  }
+
   // internal/private class
   // checked for lazy property assignment
   function Later(callback) {
-    this._ = typeof callback == "function" ?
+    this._ = isFunction(callback) ?
       callback :
       assign(callback, this) || callback[VALUE]
     ;
@@ -195,7 +208,69 @@ var _ = this._ = function(_, Function, Object) {
     };
   }
 
+  // Classes with semantics and power you need!
+  // var Lib = redefine.Class({
+  //
+  //   extend: SuperLib,  // inheritance
+  //
+  //   statics: {         // statics
+  //     someMethod: function () {},
+  //     someProperty: 0
+  //   },
+  //                      // common definition
+  //   method1: function () {},
+  //   property1: null
+  //
+  //                      // constructor
+  //   constructor: function Lib() {
+  //     // implicit initialization
+  //     // never invoked if extended via other classes
+  //   }
+  // });
+  function Class(definition, defaults) {
+    var
+      constructor = hasOwnProperty.call(definition, CONSTRUCTOR) ?
+        definition[CONSTRUCTOR] :
+        function Constructor() {},
+      statics = hasOwnProperty.call(definition, STATICS) && definition[STATICS],
+      extend = hasOwnProperty.call(definition, EXTEND) && definition[EXTEND],
+      key
+    ;
+    delete definition[CONSTRUCTOR];
+    if (extend) {
+      delete definition[EXTEND];
+      redefine(
+        constructor.prototype = createFromGeneric(extend),
+        'constructor',
+        constructor
+      );
+      if (isFunction(extend)) {
+        for(key in extend) {
+          if (hasOwnProperty.call(extend, key) &&
+              key !== 'name' && key !== 'length'
+          ) {
+            defineProperty(
+              constructor,
+              key,
+              getOwnPropertyDescriptor(extend, key)
+            );
+          }
+        }
+      }
+    }
+    if (statics) {
+      delete definition[STATICS];
+      defineAll(constructor, statics, {
+        writable: true,
+        enumerable: true
+      });
+    }
+    defineAll(constructor.prototype, definition, defaults);
+    return constructor;
+  }
+
   // semantic exports
+  redefine.Class = Class;
   redefine.as = as;
   redefine.from = from;
   redefine.later = later;
