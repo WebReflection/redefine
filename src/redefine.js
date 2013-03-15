@@ -7,6 +7,8 @@ var _ = this._ = function(_, Function, Object) {
     ENUMERABLE = "enumerable",
     EXTEND = "extend",
     GET = "get",
+    MIXIN = "mixin",
+    PROTOTYPE = "prototype",
     SET = "set",
     STATICS = "statics",
     VALUE = "value",
@@ -17,6 +19,23 @@ var _ = this._ = function(_, Function, Object) {
     hasOwnProperty = _.hasOwnProperty || Object.hasOwnProperty,
     getOwnPropertyDescriptor = _.getOwnPropertyDescriptor ||
                                Object.getOwnPropertyDescriptor,
+    getOwnPropertyNames = Object.getOwnPropertyNames,
+    mixin = Object.mixin || function mixin(
+      target, source
+    ) {
+      for(var
+        keys = getOwnPropertyNames(source),
+        i = keys.length; i--; defineProperty(
+          target,
+          keys[i],
+          getOwnPropertyDescriptor(
+            source,
+            keys[i]
+          )
+        )
+      );
+      return target;
+    }),
 
     // from _ enriched through other libraries or just Object.create
     create = _.create || _.inherit || Object.create,
@@ -93,6 +112,13 @@ var _ = this._ = function(_, Function, Object) {
     }
   }
 
+  function mixins(target, source) {
+    for (var i = 0, current; i < source.length; i++) {
+      current = source[i];
+      mixin(target, isFunction(current) ? current[PROTOTYPE] : current);
+    }
+  }
+
   function lazy(object, key, descriptor) {
     // trap these properties at definition time
     // and don't bother ever again!
@@ -145,7 +171,7 @@ var _ = this._ = function(_, Function, Object) {
   // common simplified internal utility
   function createFromGeneric(object) {
     return create(isFunction(object) ?
-        object.prototype : object
+        object[PROTOTYPE] : object
     );
   }
 
@@ -240,7 +266,7 @@ var _ = this._ = function(_, Function, Object) {
     if (extend) {
       delete definition[EXTEND];
       redefine(
-        constructor.prototype = createFromGeneric(extend),
+        constructor[PROTOTYPE] = createFromGeneric(extend),
         'constructor',
         constructor
       );
@@ -265,7 +291,11 @@ var _ = this._ = function(_, Function, Object) {
         enumerable: true
       });
     }
-    defineAll(constructor.prototype, definition, defaults);
+    if (hasOwnProperty.call(definition, MIXIN)) {
+      delete definition[MIXIN];
+      mixins(constructor[PROTOTYPE], [].concat(definition[MIXIN]));
+    }
+    defineAll(constructor[PROTOTYPE], definition, defaults);
     return constructor;
   }
 
@@ -274,6 +304,7 @@ var _ = this._ = function(_, Function, Object) {
   redefine.as = as;
   redefine.from = from;
   redefine.later = later;
+  redefine.mixin = mixin;
   redefine.using = using;
   redefine.defaults = {};
 
