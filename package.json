@@ -1,6 +1,6 @@
 {
   "name": "redefine",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A lightweight utility for an easier ES5 aware object properties definition introducing new, performance oriented, patterns.",
   "homepage": "https://github.com/WebReflection/redefine",
   "keywords": [
@@ -10,6 +10,10 @@
     "Object",
     "create",
     "inheritance",
+    "security",
+    "safe",
+    "mixin",
+    "Class",
     "OOP"
   ],
   "licenses": [
@@ -23,12 +27,15 @@
     "type": "git",
     "url": "git://github.com/WebReflection/redefine.git"
   },
-  "main": "./src/redefine.js",
+  "main": "./build/redefine.js",
   "engines": [
     "node",
     "rhino"
   ],
-  "dependencies": {},
-  "devDependencies": {},
-  "optionalDependencies": {}
+  "scripts": {
+    "test": "node test/.test.js"
+  },
+  "dependencies": {
+    "wru": ">= 0.0.0"
+  }
 }
