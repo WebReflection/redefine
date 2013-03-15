@@ -14,6 +14,9 @@ var Lib = redefine.Class({
 
   extend: SuperLib,  // inheritance
 
+  mixin: oneOrMoreObject, // mixin
+         Constructor
+
   statics: {         // statics
     someMethod: function () {},
     someProperty: 0
