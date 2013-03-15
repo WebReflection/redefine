@@ -19,15 +19,16 @@ var _ = this._ = function(_, Function, Object) {
     hasOwnProperty = _.hasOwnProperty || Object.hasOwnProperty,
     getOwnPropertyDescriptor = _.getOwnPropertyDescriptor ||
                                Object.getOwnPropertyDescriptor,
-    getOwnPropertyNames = Object.getOwnPropertyNames,
+    getOwnPropertyNames = Object.getOwnPropertyNames || Object.keys,
     mixin = Object.mixin || function mixin(
       target, source
     ) {
       for(var
         keys = getOwnPropertyNames(source),
-        i = keys.length; i--; defineProperty(
+        i = keys.length; i--; defineMagic(
           target,
           keys[i],
+          nullObject,
           getOwnPropertyDescriptor(
             source,
             keys[i]
@@ -35,7 +36,7 @@ var _ = this._ = function(_, Function, Object) {
         )
       );
       return target;
-    }),
+    },
 
     // from _ enriched through other libraries or just Object.create
     create = _.create || _.inherit || Object.create,
@@ -110,6 +111,14 @@ var _ = this._ = function(_, Function, Object) {
       hasOwnProperty.call(values, key) &&
       define(object, key, values[key], defaults);
     }
+    /* one day this should probably be ...
+    for(var
+      keys = getOwnPropertyNames(values),
+      i = keys.length; i--; define(
+        object, keys[i], values[keys[i]], defaults
+      )
+    );
+    // */
   }
 
   function mixins(target, source) {
@@ -239,6 +248,9 @@ var _ = this._ = function(_, Function, Object) {
   //
   //   extend: SuperLib,  // inheritance
   //
+  //   mixin: oneOrMoreObject,  // mixin
+  //          Constructor
+  //
   //   statics: {         // statics
   //     someMethod: function () {},
   //     someProperty: 0
@@ -275,9 +287,10 @@ var _ = this._ = function(_, Function, Object) {
           if (hasOwnProperty.call(extend, key) &&
               key !== 'name' && key !== 'length'
           ) {
-            defineProperty(
+            defineMagic(
               constructor,
               key,
+              nullObject,
               getOwnPropertyDescriptor(extend, key)
             );
           }

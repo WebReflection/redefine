@@ -12,7 +12,7 @@ clean:
 
 # clean/remove build folder
 test:
-	wru test/redefine.js
+	node node_modules/wru/node/program.js test/redefine.js
 
 # clean/remove build folder
 test-online:
