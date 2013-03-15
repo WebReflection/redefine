@@ -2,6 +2,7 @@ redefine.js
 ===========
 a lightweight, simplified, and powerful ES5 utility.
 
+[![build status](https://secure.travis-ci.org/WebReflection/redefine.png 'travis')](http://travis-ci.org/WebReflection/redefine)
 
 ### New: Classes Just Landed!
 One thing really frequent in JS world, one thing not so easy to get right if not familiar with ES5: the JavaScript **Class** concept from other OOP languages.
