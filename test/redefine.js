@@ -459,4 +459,26 @@ assert(son instanceof Source);
     wru.assert('all inherited methods the same', a.method === c.method && b.method === c.method);
     
   }
+},{
+  name: 'mixin',
+  test: function () {
+    function O(){}
+    var o = {a: function () {}, b: 'b'};
+    O.prototype.c = function () {};
+    var M = redefine.Class({
+      mixin: O
+    }).prototype;
+    wru.assert('one argument as constructor', M.c === O.prototype.c);
+    M = redefine.Class({
+      mixin: o
+    }).prototype;
+    wru.assert('one argument as object', M.a === o.a && M.b === o.b);
+    M = redefine.Class({
+      mixin: [o, O]
+    }).prototype;
+    wru.assert(
+      'multiple arguments, different types',
+      M.c === O.prototype.c && M.a === o.a && M.b === o.b
+    );
+  }
 }]);

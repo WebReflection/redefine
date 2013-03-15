@@ -305,8 +305,8 @@ var _ = this._ = function(_, Function, Object) {
       });
     }
     if (hasOwnProperty.call(definition, MIXIN)) {
-      delete definition[MIXIN];
       mixins(constructor[PROTOTYPE], [].concat(definition[MIXIN]));
+      delete definition[MIXIN];
     }
     defineAll(constructor[PROTOTYPE], definition, defaults);
     return constructor;
