@@ -3,6 +3,34 @@ redefine.js
 a lightweight, simplified, and powerful ES5 utility.
 
 
+### New: Classes Just Landed!
+One thing really frequent in JS world, one thing not so easy to get right if not familiar with ES5: the JavaScript **Class** concept from other OOP languages.
+
+Well, with tests included on top of all features, `redefine.Class(definition)` now offers a semantic utility to safely create classes in JavaScript.
+
+```JavaScript
+var Lib = redefine.Class({
+
+  extend: SuperLib,  // inheritance
+
+  statics: {         // statics
+    someMethod: function () {},
+    someProperty: 0
+  },
+                      // common definition
+  method1: function () {},
+  property1: null
+
+                      // constructor
+  constructor: function Lib() {
+    //implicit initialization
+    // never invoked if extended via other classes
+  }
+});
+```
+All properties tested and fully covered!
+
+
 ### The Problem
 ES5 verbosity is not just annoying, is also *spaghetti prone*. The inability to group few descriptors together for one or more properties is inefficient too because of the amount of garbage we create at runtime to define all properties we need.
 
