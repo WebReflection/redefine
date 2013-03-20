@@ -11,8 +11,17 @@ var _ = this._ = function(_, Function, Object) {
     PROTOTYPE = "prototype",
     SET = "set",
     STATICS = "statics",
+    SUPER = "super",
     VALUE = "value",
     WRITABLE = "writable",
+
+    // from Function.prototype
+    bind = Object.bind || function bind(self) {
+      var cb = this;
+      return function() {
+        return cb.apply(self, arguments);
+      };
+    },
 
     // from Object || Object.prototype if _ has no polyfills;
     defineProperty = _.defineProperty || Object.defineProperty,
@@ -20,6 +29,10 @@ var _ = this._ = function(_, Function, Object) {
     getOwnPropertyDescriptor = _.getOwnPropertyDescriptor ||
                                Object.getOwnPropertyDescriptor,
     getOwnPropertyNames = Object.getOwnPropertyNames || Object.keys,
+    getPrototypeOf = Object.getPrototypeOf || function getPrototypeOf(object) {
+      return object.__proto__;
+    },
+    getKeys = Object.getOwnPropertyNames || Object.keys,
     mixin = Object.mixin || function mixin(
       target, source
     ) {
@@ -58,6 +71,7 @@ var _ = this._ = function(_, Function, Object) {
 
     // recycled object for a happier GC
     nullObject = create(null),
+    superDescriptor = create(null),
     valueObject = {},
 
     hasDescriptorBug = false,
@@ -243,6 +257,28 @@ var _ = this._ = function(_, Function, Object) {
     };
   }
 
+  // magic, freaking cool, only, real
+  // Java like, this.super(); YEAH!
+  superDescriptor.get = function get() {
+    var
+      caller = get.caller,
+      proto = this,
+      i, key, keys, parent;
+    while ((proto = getPrototypeOf(proto))) {
+      keys = getKeys(proto);
+      i = keys.length;
+      while (i--) {
+        if (proto[key = keys[i]] === caller) {
+          do {
+            parent = getPrototypeOf(proto);
+            proto = parent;
+          } while (parent[key] === caller);
+          return bind.call(parent[key], this);
+        }
+      }
+    }
+  };
+
   // Classes with semantics and power you need!
   // var Lib = redefine.Class({
   //
@@ -274,6 +310,10 @@ var _ = this._ = function(_, Function, Object) {
       extend = hasOwnProperty.call(definition, EXTEND) && definition[EXTEND],
       key
     ;
+    if (!defaults) {
+      defaults = {};
+      defaults[WRITABLE] = true;
+    }
     delete definition[CONSTRUCTOR];
     if (extend) {
       delete definition[EXTEND];
@@ -309,7 +349,13 @@ var _ = this._ = function(_, Function, Object) {
       delete definition[MIXIN];
     }
     defineAll(constructor[PROTOTYPE], definition, defaults);
+    withSuper(constructor[PROTOTYPE]);
     return constructor;
+  }
+
+  function withSuper(proto) {
+    return hasOwnProperty.call(proto, SUPER) ?
+      object : defineProperty(proto, SUPER, superDescriptor)
   }
 
   // semantic exports
@@ -319,6 +365,7 @@ var _ = this._ = function(_, Function, Object) {
   redefine.later = later;
   redefine.mixin = mixin;
   redefine.using = using;
+  redefine[SUPER] = withSuper;
   redefine.defaults = {};
 
   // var redefine = require("redefine");
