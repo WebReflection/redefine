@@ -1,18 +1,46 @@
-.PHONY: clean types test test-online
+.PHONY: build var node amd size hint clean test web preview pages dependencies test-online
+
+# repository name
+REPO = redefine
+
+# make var files
+VAR = src/$(REPO).js
 
 # default build task
 build:
+	make clean
+	make var
+#	make node
+#	make amd
 	make test
+#	make hint
+	make size
+
+# build generic version
+var:
 	mkdir -p build
-	java -jar jar/yuicompressor-2.4.6.jar --type=js src/redefine.js -o build/redefine.js
+	cat template/var.before $(VAR) template/var.after >build/no-copy.$(REPO).max.js
+	node node_modules/uglify-js/bin/uglifyjs --verbose build/no-copy.$(REPO).max.js >build/no-copy.$(REPO).js
+	cat template/license.before LICENSE.txt template/license.after build/no-copy.$(REPO).max.js >build/$(REPO).max.js
+	cat template/copyright build/no-copy.$(REPO).js >build/$(REPO).js
+	rm build/no-copy.$(REPO).max.js
+	rm build/no-copy.$(REPO).js
 
 # clean/remove build folder
 clean:
 	rm -rf build
 
+# hint built file
+hint:
+	node node_modules/jshint/bin/jshint src/$(REPO).js
+
 # clean/remove build folder
 test:
-	node node_modules/wru/node/program.js test/redefine.js
+	npm test
+
+size:
+	wc -c build/$(REPO).max.js
+	gzip -c build/$(REPO).js | wc -c
 
 # clean/remove build folder
 test-online:
@@ -32,4 +60,14 @@ test-online:
 	git checkout master
 	rm -rf ../tmp
 
+
+# modules used in this repo
+dependencies:
+	rm -rf node_modules
+	mkdir node_modules
+	npm install wru
+	npm install polpetta
+	npm install uglify-js@1
+	npm install jshint
+	npm install markdown
 
