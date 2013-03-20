@@ -32,7 +32,7 @@ var Lib = redefine.Class({
   }
 });
 ```
-All properties tested and fully covered!
+All properties tested and fully covered, included the very special case where you want to use `this.super(argN)` in inherited methods or constructor. No performance impact if you don't use it, not a single problem if you are under strict code and don't want to allow `arguments.caller` access, you use what you want/need when you want/need, how easy is that? Enjoy! (now back to the problem ...)
 
 
 ### The Problem
