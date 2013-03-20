@@ -522,51 +522,51 @@ assert(son instanceof Source);
   name: 'all the objects',
   test: function () {
           redefine.super(Object.prototype);
-          var results = [];
-          function A(){}
-          A.prototype.hello = function () {
-            results.push("hello from A");
-          };
-          A.prototype.sayWhat = function () {
-            results.push("I said hello from A");
-          };
+    var results = [];
+    function A(){}
+    A.prototype.hello = function () {
+      results.push("hello from A");
+    };
+    A.prototype.sayWhat = function () {
+      results.push("I said hello from A");
+    };
 
-          function B(){}
-          (B.prototype = new A).constructor = B;
-          B.prototype.hello = function () {
-            this.super();
-            results.push("hello from B");
-          };
+    function B(){}
+    (B.prototype = new A).constructor = B;
+    B.prototype.hello = function () {
+      this.super();
+      results.push("hello from B");
+    };
 
-          function C(){}
-          (C.prototype = new B).constructor = C;
-          C.prototype.hello = function () {
-            this.super();
-            results.push("hello from C");
-          };
-          C.prototype.sayWhat = function () {
-            this.super();
-            results.push("I said hello from C");
-          };
+    function C(){}
+    (C.prototype = new B).constructor = C;
+    C.prototype.hello = function () {
+      this.super();
+      results.push("hello from C");
+    };
+    C.prototype.sayWhat = function () {
+      this.super();
+      results.push("I said hello from C");
+    };
 
-          function D(){}
-          (D.prototype = new C).constructor = D;
-          D.prototype.hello = function () {
-            this.super();
-            results.push("hello from D");
-          };
+    function D(){}
+    (D.prototype = new C).constructor = D;
+    D.prototype.hello = function () {
+      this.super();
+      results.push("hello from D");
+    };
 
-          (new D).hello();
-          (new D).sayWhat();
+    (new D).hello();
+    (new D).sayWhat();
 
-          wru.assert("all executed", results.length === 6);
-          wru.assert("in the right order",
-            results.shift() === "hello from A" &&
-            results.shift() === "hello from B" &&
-            results.shift() === "hello from C" &&
-            results.shift() === "hello from D" &&
-            results.shift() === "I said hello from A" &&
-            results.shift() === "I said hello from C"
-          );
+    wru.assert("all executed", results.length === 6);
+    wru.assert("in the right order",
+      results.shift() === "hello from A" &&
+      results.shift() === "hello from B" &&
+      results.shift() === "hello from C" &&
+      results.shift() === "hello from D" &&
+      results.shift() === "I said hello from A" &&
+      results.shift() === "I said hello from C"
+    );
   }
 }]);
