@@ -19,12 +19,14 @@ var _ = this._ = function(_, Function, Object) {
     createFunction = Function,
 
     // from Function.prototype
+    /* ain't needed anymore
     bind = Object.bind || function bind(self) {
       var cb = this;
       return function() {
         return cb.apply(self, arguments);
       };
     },
+    */
 
     getTheRightOne = function (property, dflt) {
       return _[property] || Object[property] || dflt;
@@ -78,8 +80,8 @@ var _ = this._ = function(_, Function, Object) {
     ),
 
     // recycled object for a happier GC
-    nullObject = create(null),
     superDescriptor = create(null),
+    nullObject = create(null),
     staticsDescriptor = {},
     valueObject = {},
 
@@ -267,14 +269,14 @@ var _ = this._ = function(_, Function, Object) {
         defineAll(object, key, defaults)
       ) || object;
     };
-  }
+  };
 
   // magic, freaking cool, only, real
   // Java like, this.super(); YEAH!
   // works only in a non strict environment
-  superDescriptor[GET] = function get() {
+  superDescriptor[VALUE] = function superDescriptor() {
     var
-      caller = get.caller,
+      caller = superDescriptor.caller,
       proto = this,
       i, key, keys, parent;
     while ((proto = getPrototypeOf(proto))) {
@@ -288,11 +290,14 @@ var _ = this._ = function(_, Function, Object) {
             parent = getPrototypeOf(proto);
             proto = parent;
           } while (parent[key] === caller);
-          return bind.call(parent[key], this);
+          return parent[key].apply(this, arguments);
         }
       }
     }
   };
+  superDescriptor[CONFIGURABLE] =
+  superDescriptor[ENUMERABLE] =
+  superDescriptor[WRITABLE] = false;
 
   // Classes with semantics and power you need!
   // var Lib = redefine.Class({
