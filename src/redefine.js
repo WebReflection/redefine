@@ -19,14 +19,12 @@ var _ = this._ = function(_, Function, Object) {
     createFunction = Function,
 
     // from Function.prototype
-    /* ain't needed anymore
     bind = Object.bind || function bind(self) {
       var cb = this;
       return function() {
         return cb.apply(self, arguments);
       };
     },
-    */
 
     getTheRightOne = function (property, dflt) {
       return _[property] || Object[property] || dflt;
@@ -274,15 +272,10 @@ var _ = this._ = function(_, Function, Object) {
   // magic, freaking cool, only, real
   // Java like, this.super(); YEAH!
   // works only in a non strict environment
-  superDescriptor[VALUE] = function superDescriptor() {
-    var
-      caller = superDescriptor.caller,
-      proto = this,
-      i, key, keys, parent;
+  function getSuperMethod(caller, proto) {
+    var i, key, keys, parent;
     while ((proto = getPrototypeOf(proto))) {
-      // the constructor is a special case that should be boosted up
-      // it is indeed the most common use case
-      keys = getOwnPropertyNames(proto).concat('constructor');
+      keys = getOwnPropertyNames(proto);
       i = keys.length;
       while (i--) {
         if (proto[key = keys[i]] === caller) {
@@ -290,14 +283,25 @@ var _ = this._ = function(_, Function, Object) {
             parent = getPrototypeOf(proto);
             proto = parent;
           } while (parent[key] === caller);
-          return parent[key].apply(this, arguments);
+          return parent[key];
         }
       }
     }
+  }
+  function Super() {
+    return getSuperMethod(Super.caller, this).apply(this, arguments);
+  }
+  superDescriptor[VALUE] = function bound(context) {
+    return bind.apply(
+      getSuperMethod(bound.caller, context),
+      arguments
+    );
   };
   superDescriptor[CONFIGURABLE] =
   superDescriptor[ENUMERABLE] =
   superDescriptor[WRITABLE] = false;
+  defineProperty(Super, 'bind', superDescriptor);
+  superDescriptor[VALUE] = Super;
 
   // Classes with semantics and power you need!
   // var Lib = redefine.Class({

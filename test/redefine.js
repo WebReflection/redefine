@@ -569,4 +569,21 @@ assert(son instanceof Source);
       results.shift() === "I said hello from C"
     );
   }
+},{
+  name: 'detached .super()',
+  test: function () {
+    function A(Constructor){
+      return this instanceof Constructor;
+    }
+    var B = redefine.Class({
+      extend: A,
+      constructor: function () {
+        var bound = this.super.bind(this);
+        setTimeout(wru.async(function(){
+          wru.assert('everything worked as expected', bound(B));
+        }), 10);
+      }
+    });
+    new B;
+  }
 }]);
