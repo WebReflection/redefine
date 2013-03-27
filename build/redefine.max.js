@@ -430,7 +430,7 @@ var _ = this._ = function(_, Function, Object) {
   try {
     // Android 2.2 and 2.3 and webOS
     // plus Dolphin in older Androids
-    // have a really weird bug whre inherited
+    // have a really weird bug where inherited
     // getters cannot be set as value
     // in that case is a bit more complicated
     // to obtain a later() behavior
