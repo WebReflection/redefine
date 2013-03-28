@@ -66,23 +66,25 @@ preview:
 	sleep 3
 	rm README.md.htm README.md.html
 
-# clean/remove build folder
-test-online:
-	make test
-	mkdir -p ../tmp
-	mkdir -p ../tmp/src
-	mkdir -p ../tmp/test
-	cp src/* ../tmp/src
-	cp test/* ../tmp/test
-	cp test.html ../tmp
-	git checkout gh-pages
+pages:
 	git pull --rebase
-	cp -r ../tmp/* ./
-	git add .
-	git commit -m 'Auto-update tests'
+	make var
+	mkdir -p ~/tmp
+	mkdir -p ~/tmp/$(REPO)
+	cp -rf src ~/tmp/$(REPO)
+	cp -rf build ~/tmp/$(REPO)
+	cp -rf test ~/tmp/$(REPO)
+	cp index.html ~/tmp/$(REPO)
+	git checkout gh-pages
+	mkdir -p test
+	rm -rf test
+	cp -rf ~/tmp/$(REPO) test
+	git add test
+	git add test/.
+	git commit -m 'automatic test generator'
 	git push
 	git checkout master
-	rm -rf ../tmp
+	rm -r ~/tmp/$(REPO)
 
 
 # modules used in this repo
