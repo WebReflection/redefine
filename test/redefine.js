@@ -489,7 +489,31 @@ assert(son instanceof Source);
       M.c === O.prototype.c && M.a === o.a && M.b === o.b
     );
   }
-}  ,{
+},{
+  name: 'mixin as function',
+  test: function () {
+    function method(){}
+    var O = function (){
+      this.method = method;
+    };
+    var M = redefine.Class({
+      mixin: O
+    }).prototype;
+    wru.assert('mixin not added', M.method !== method);
+    O.type = 'mixin';
+    M = redefine.Class({
+      mixin: O
+    }).prototype;
+    wru.assert('mixin added', M.method === method);
+    O = function mixin(){
+      return {whatever: method};
+    };
+    M = redefine.Class({
+      mixin: O
+    }).prototype;
+    wru.assert('mixin added with objects too', M.whatever === method);
+  }
+},{
   name: 'passing arguments',
   test: function () {
 
@@ -585,5 +609,23 @@ assert(son instanceof Source);
       }
     });
     new B;
+  }
+},{
+  name: 'bound methods',
+  test: function () {
+    var C = redefine.Class({
+      method1: function () {
+        return 'method1';
+      },
+      method2: function () {
+        return 'method2';
+      }
+    });
+    var c = new C,
+        method1 = c.bound('method1'),
+        method2 = c.bound('method2');
+    wru.assert('not undefined', !!method1 && !!method2);
+    wru.assert('same bound object 1', c.bound('method1') === method1);    
+    wru.assert('same bound object 2', c.bound('method2') === method2);
   }
 }]);

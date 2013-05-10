@@ -23,24 +23,25 @@ var _ = this._ = function(_, Function, Object) {
   /*! (C) WebReflection *//** @preserve https://github.com/WebReflection/redefine */
   var
     // scoped shortcuts/constants
-    CONFIGURABLE = "configurable",
-    CONSTRUCTOR = "constructor",
-    ENUMERABLE = "enumerable",
-    EXTEND = "extend",
-    GET = "get",
-    MIXIN = "mixin",
-    PROTO = "__proto__",
-    PROTOTYPE = "prototype",
-    SET = "set",
-    STATICS = "statics",
-    SUPER = "super",
-    VALUE = "value",
-    WRITABLE = "writable",
+    BOUND = 'bound',
+    CONFIGURABLE = 'configurable',
+    CONSTRUCTOR = 'constructor',
+    ENUMERABLE = 'enumerable',
+    EXTEND = 'extend',
+    GET = 'get',
+    MIXIN = 'mixin',
+    PRIVATE = '__@',
+    PROTO = '__proto__',
+    PROTOTYPE = 'prototype',
+    SET = 'set',
+    STATICS = 'statics',
+    SUPER = 'super',
+    VALUE = 'value',
+    WRITABLE = 'writable',
 
     createFunction = Function,
 
-    // from Function.prototype
-    bind = Object.bind || function bind(self) {
+    bind = Function.bind || function bind(self) {
       var cb = this;
       return function() {
         return cb.apply(self, arguments);
@@ -94,11 +95,12 @@ var _ = this._ = function(_, Function, Object) {
     ],
 
     // delete all ES5 properties
-    clear = createFunction("o", "delete o." +
-      commonProperties.join(";delete o.") 
+    clear = createFunction('o', 'delete o.' +
+      commonProperties.join(';delete o.') 
     ),
 
     // recycled object for a happier GC
+    boundDescriptor = create(null),
     superDescriptor = create(null),
     nullObject = create(null),
     staticsDescriptor = {},
@@ -115,10 +117,10 @@ var _ = this._ = function(_, Function, Object) {
   staticsDescriptor[ENUMERABLE] = true;
 
   for(i = 0; i < commonProperties.length; i++) {
-    commonProperties[i] = ["if(h.call(a,'", "'))b.", "=a.",";"].join(commonProperties[i]);
+    commonProperties[i] = ['if(h.call(a,"', '"))b.', '=a.',';'].join(commonProperties[i]);
   }
   // assign only object own properties
-  assign = createFunction("h","return function(a,b){" + commonProperties.join("") + "}")(hasOwnProperty);
+  assign = createFunction('h','return function(a,b){' + commonProperties.join('') + '}')(hasOwnProperty);
 
   function defineMagic(object, key, defaults, descriptor) {
     assign(defaults || redefine.defaults || {}, nullObject);
@@ -171,9 +173,14 @@ var _ = this._ = function(_, Function, Object) {
   }
 
   function mixins(target, source) {
-    for (var i = 0, current; i < source.length; i++) {
+    for (var i = 0, current, tmp; i < source.length; i++) {
       current = source[i];
-      mixin(target, isFunction(current) ? current[PROTOTYPE] : current);
+      if (isFunction(current)) {
+        current = (current.type || current.name) === 'mixin' ?
+          current.call(current) || current :
+          current[PROTOTYPE];
+      }
+      mixin(target, current);
     }
   }
 
@@ -246,7 +253,7 @@ var _ = this._ = function(_, Function, Object) {
 
   // common simplified internal utility
   function isFunction(object) {
-    return typeof object === "function";
+    return typeof object === 'function';
   }
 
   // internal/private class
@@ -273,7 +280,7 @@ var _ = this._ = function(_, Function, Object) {
     // exactly same things:
     // obj <== redefine(obj, key, value[, defaults]);
     // obj <== redefine(obj, objProps[, defaults]);
-    return (typeof key == "string" ?
+    return (typeof key == 'string' ?
       define(object, key, value, defaults) :
       defineAll(object, key, value)
     ) || object;
@@ -283,7 +290,7 @@ var _ = this._ = function(_, Function, Object) {
   // with defaults pre assigned
   function using(defaults) {
     return function redefine(object, key, value) {
-      return (typeof key == "string" ?
+      return (typeof key == 'string' ?
         define(object, key, value, defaults) :
         defineAll(object, key, defaults)
       ) || object;
@@ -292,7 +299,8 @@ var _ = this._ = function(_, Function, Object) {
 
   // magic, freaking cool, only, real
   // Java like, this.super(); YEAH!
-  // works only in a non strict environment
+  // works only in a non strict environment though
+  // but you don't have to use it
   function getSuperMethod(caller, proto) {
     var i, key, keys, parent;
     while ((proto = getPrototypeOf(proto))) {
@@ -312,9 +320,9 @@ var _ = this._ = function(_, Function, Object) {
   function Super() {
     return getSuperMethod(Super.caller, this).apply(this, arguments);
   }
-  superDescriptor[VALUE] = function bound(context) {
+  superDescriptor[VALUE] = function superBound(context) {
     return bind.apply(
-      getSuperMethod(bound.caller, context),
+      getSuperMethod(superBound.caller, context),
       arguments
     );
   };
@@ -323,6 +331,22 @@ var _ = this._ = function(_, Function, Object) {
   superDescriptor[WRITABLE] = false;
   defineProperty(Super, 'bind', superDescriptor);
   superDescriptor[VALUE] = Super;
+
+  function bound(methodName) {
+    return this[PRIVATE + methodName] || defineBoundMethod(this, methodName);
+  }
+
+  function defineBoundMethod(self, methodName) {
+    boundDescriptor[VALUE] = bind.call(self[methodName], self);
+    defineProperty(self, PRIVATE + methodName, boundDescriptor);
+    boundDescriptor[VALUE] = bound;
+    return self[PRIVATE + methodName];
+  }
+
+  boundDescriptor[ENUMERABLE] = false;
+  boundDescriptor[CONFIGURABLE] =
+  boundDescriptor[WRITABLE] = true;
+  boundDescriptor[VALUE] = bound;
 
   // Classes with semantics and power you need!
   // var Lib = redefine.Class({
@@ -393,6 +417,13 @@ var _ = this._ = function(_, Function, Object) {
     }
     defineAll(constructor[PROTOTYPE], definition, defaults);
     withSuper(constructor[PROTOTYPE]);
+    if (!(BOUND in constructor[PROTOTYPE])) {
+      defineProperty(
+        constructor[PROTOTYPE],
+        BOUND,
+        boundDescriptor
+      );
+    }
     return constructor;
   }
 
@@ -411,8 +442,8 @@ var _ = this._ = function(_, Function, Object) {
   redefine[SUPER] = withSuper;
   redefine.defaults = {};
 
-  // var redefine = require("redefine");
-  if ("undefined" !== typeof module && module.exports) {
+  // var redefine = require('redefine');
+  if ('undefined' !== typeof module && module.exports) {
     (module.exports = redefine).redefine = redefine;
   }
 

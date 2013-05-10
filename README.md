@@ -1,8 +1,19 @@
 redefine.js
 ===========
-a lightweight, simplified, and powerful ES5 utility.
+a lightweight yet powerful ES5 utility.
 
 [![build status](https://secure.travis-ci.org/WebReflection/redefine.png 'travis')](http://travis-ci.org/WebReflection/redefine)
+
+### About Redefine JS
+This ~1.5KB (minified and gzipped) framework brings the power of ES5 and ES6 features in node.js and all modern mobile or desktop browsers.
+
+Main features:
+
+  * **ES6** like **classes** definition with extra power via `mixin` and `bound` magic
+  * **ES5** **properties** definition without descriptors paranoia and prolix syntax
+  * **ES3** **friendly** and mostly compatible
+
+All common tasks to organize your objects access, definition, and inheritance, can be achieved via `redefine.js` goodness
 
 ### New: Classes Just Landed!
 One thing really frequent in JS world, one thing not so easy to get right if not familiar with ES5: the JavaScript **Class** concept from other OOP languages.
