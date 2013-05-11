@@ -13,9 +13,9 @@ Main features:
   * **ES5** **properties** definition without descriptors paranoia and prolix syntax
   * **ES3** **friendly** and mostly compatible
 
-All common tasks to organize your objects access, definition, and inheritance, can be achieved via `redefine.js` goodness
+All common tasks to organize your objects access, definition, and inheritance, can be achieved via `redefine.js` goodness.
 
-### New: Classes Just Landed!
+### Classes
 One thing really frequent in JS world, one thing not so easy to get right if not familiar with ES5: the JavaScript **Class** concept from other OOP languages.
 
 Well, with tests included on top of all features, `redefine.Class(definition)` now offers a semantic utility to safely create classes in JavaScript.
