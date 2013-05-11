@@ -311,8 +311,10 @@ var _ = this._ = function(_, Function, Object) {
   defineProperty(Super, 'bind', superDescriptor);
   superDescriptor[VALUE] = Super;
 
-  function bound(methodName) {
-    return this[PRIVATE + methodName] || defineBoundMethod(this, methodName);
+  function bound(object, methodName) {
+    return typeof object === 'string' ?
+      bound(this, object) :
+      object[PRIVATE + methodName] || defineBoundMethod(object, methodName);
   }
 
   function defineBoundMethod(self, methodName) {
@@ -411,15 +413,19 @@ var _ = this._ = function(_, Function, Object) {
       object : defineProperty(proto, SUPER, superDescriptor);
   }
 
-  // semantic exports
-  redefine.Class = Class;
-  redefine.as = as;
-  redefine.from = from;
-  redefine.later = later;
-  redefine.mixin = mixin;
-  redefine.using = using;
-  redefine[SUPER] = withSuper;
-  redefine.defaults = {};
+  // utilities
+  redefine.from = from;       // similar to Object.create
+                              // with redefine like second argument
+  redefine.Class = Class;     // class utility to organize code
+  redefine[SUPER]= withSuper; // magic .super() behavior
+  redefine.mixin = mixin;     // Object.mixin() ES6 like proposal
+  redefine.bound = bound;     // ensure a bound method once
+
+  // sub-utilities
+  redefine.as = as;           // specify exatc descriptor
+  redefine.later = later;     // lazy variable assignment
+  redefine.using = using;     // specify defaults
+  redefine.defaults = {};     // set explicit generic defaults
 
   // var redefine = require('redefine');
   if ('undefined' !== typeof module && module.exports) {

@@ -628,4 +628,22 @@ assert(son instanceof Source);
     wru.assert('same bound object 1', c.bound('method1') === method1);    
     wru.assert('same bound object 2', c.bound('method2') === method2);
   }
+},{
+  name: 'bound as export',
+  test: function () {
+    var C = redefine.Class({
+      method1: function () {
+        return 'method1';
+      },
+      method2: function () {
+        return 'method2';
+      }
+    });
+    var c = new C,
+        method1 = redefine.bound(c, 'method1'),
+        method2 = redefine.bound(c, 'method2');
+    wru.assert('not undefined', !!method1 && !!method2);
+    wru.assert('same bound object 1', c.bound('method1') === method1);    
+    wru.assert('same bound object 2', redefine.bound(c, 'method2') === method2);
+  }
 }]);
