@@ -101,6 +101,24 @@ var _ = this._ = function(_, Function, Object) {
   // assign only object own properties
   assign = createFunction('h','return function(a,b){' + commonProperties.join('') + '}')(hasOwnProperty);
 
+  function clone(o, p) {
+    for (var
+      descriptor = {},
+      keys = getOwnPropertyNames(o),
+      i = 0,
+      length = keys.length,
+      key;
+      i < length; i++
+    ) {
+      key = keys[i];
+      descriptor[key] = getOwnPropertyDescriptor(o, key);
+    }
+    return create(
+      p === undefined ? getPrototypeOf(o) : p,
+      descriptor
+    );
+  }
+
   function defineMagic(object, key, defaults, descriptor) {
     assign(defaults || redefine.defaults || {}, nullObject);
     assign(descriptor, nullObject);
@@ -420,6 +438,8 @@ var _ = this._ = function(_, Function, Object) {
   redefine[SUPER]= withSuper; // magic .super() behavior
   redefine.mixin = mixin;     // Object.mixin() ES6 like proposal
   redefine.bound = bound;     // ensure a bound method once
+  redefine.clone = clone;     // a proper ES5 way to clone objects
+                              // (deep/recursive clone not supported)
 
   // sub-utilities
   redefine.as = as;           // specify exatc descriptor

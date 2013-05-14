@@ -646,4 +646,23 @@ assert(son instanceof Source);
     wru.assert('same bound object 1', c.bound('method1') === method1);    
     wru.assert('same bound object 2', redefine.bound(c, 'method2') === method2);
   }
+},{
+  name: 'clone',
+  test: function () {
+    function A() {
+      var random = Math.random();
+      Object.defineProperty(this, 'random', {
+        get: function () {
+          return random;
+        }
+      });
+    }
+
+    A.prototype.test = true;
+    var a1 = new A,
+        a2 = redefine.clone(a1);
+
+    wru.assert('inheritance', a2 instanceof A);
+    wru.assert('same getter', a2.random === a1.random);
+  }
 }]);
