@@ -4,6 +4,15 @@ a lightweight yet powerful ES5 utility.
 
 [![build status](https://secure.travis-ci.org/WebReflection/redefine.png 'travis')](http://travis-ci.org/WebReflection/redefine)
 
+## Obsolete
+The most updated, future proof, actively maintained, and widely compatible way to define classes is [es-class](https://github.com/WebReflection/es-class#es-class).
+
+If you are here to enrich prototypes, please have a look at `es-class`, it will most likely provide everything you need and  much more.
+
+If you are here to be able to lazily assign properties to a generic object or prototype, please check [lazyval](https://github.com/WebReflection/lazyval#lazyval).
+
+
+
 ### About Redefine JS
 This ~1.5KB (minified and gzipped) framework brings the power of ES5 and ES6 features in node.js and all modern mobile or desktop browsers.
 
